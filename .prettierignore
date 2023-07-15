@@ -7,6 +7,7 @@ CHANGELOG.md
 readme.md
 nodemon.json
 yarn.lock
+environment.ts
 dist
 build
 public

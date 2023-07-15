@@ -12,7 +12,7 @@ export const getMenuByID = (req: Request, res: Response) => {
   res.status(201).json({
     status: 'OK',
     statusCode: 201,
-    message: 'Success add menu!'
+    message: 'Success get single menu!'
   })
 }
 
@@ -20,7 +20,7 @@ export const addMenu = (req: Request, res: Response) => {
   res.status(201).json({
     status: 'OK',
     statusCode: 201,
-    message: 'Success update menu!'
+    message: 'Success add menu!'
   })
 }
 
