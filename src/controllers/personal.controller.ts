@@ -40,9 +40,10 @@ export const getUserByID = async (req: Request, res: Response) => {
   try {
     const result: any = await findUserByID(uuid)
     if (!result) {
-      return responseHandler(['OK', 200, 'Success get user', result], res)
+      logger.info('Data not found')
+      return responseHandler([false, 404, 'Data not found', []], res)
     }
-    responseHandler([false, 404, 'Data not found', []], res)
+    return responseHandler(['OK', 200, 'Success get user', result], res)
   } catch (error: any) {
     logger.error(error.message)
     responseHandler([false, 422, error.message, []], res)
