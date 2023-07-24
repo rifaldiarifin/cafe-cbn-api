@@ -23,6 +23,7 @@ import {
   updateContactUserValidation,
   updateUserValidation
 } from '../validations/auth.validation'
+import { hashing } from '../utils/hashing'
 
 export const getUser = async (req: Request, res: Response) => {
   try {
@@ -30,8 +31,8 @@ export const getUser = async (req: Request, res: Response) => {
     logger.info(`Success get users, result: ${users.length}`)
     responseHandler(['OK', 200, `Success get users, result:${users.length}`, users], res)
   } catch (error: any) {
-    logger.info(`Failed to fetch data from database, result:${error.message}`)
-    responseHandler([false, 404, `Failed to fetch data from database, result:${error.message}`, []], res)
+    logger.info(`ERROR: Users - Get All Users = ${error.message}`)
+    responseHandler([false, 404, error.message, []], res)
   }
 }
 
@@ -45,7 +46,7 @@ export const getUserByID = async (req: Request, res: Response) => {
     }
     return responseHandler(['OK', 200, 'Success get user', result], res)
   } catch (error: any) {
-    logger.error(error.message)
+    logger.error(`ERROR: Users - Get Users = ${error.message}`)
     responseHandler([false, 422, error.message, []], res)
   }
 }
@@ -99,13 +100,14 @@ export const addUser = async (req: Request, res: Response) => {
 
   // Success validate
   try {
+    userValidate.value.password = `${hashing(userValidate.value.password)}`
     await createUser(userValidate.value)
     await createUserAccess(userValidate.value.access)
     await createUserContact(userValidate.value.contact)
     logger.info('Success add user!')
     responseHandler(['OK', 201, 'Success add user!', []], res)
   } catch (error: any) {
-    logger.error(error.message)
+    logger.error(`ERROR: Users - Create = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
   }
 }
@@ -174,7 +176,7 @@ export const updateUser = async (req: Request, res: Response) => {
       return responseHandler([false, 404, 'Data not found', []], res)
     }
   } catch (error: any) {
-    logger.error(error.message)
+    logger.error(`ERROR: Users - Update = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
   }
 }
@@ -192,7 +194,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       responseHandler([false, 404, 'Data not found', []], res)
     }
   } catch (error: any) {
-    logger.error(error.message)
+    logger.error(`ERROR: Users - Delete = ${error.message}`)
     responseHandler([false, 422, error.message, []], res)
   }
 }
