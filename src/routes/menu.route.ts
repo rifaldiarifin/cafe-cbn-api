@@ -1,14 +1,25 @@
 import express from 'express'
-import { addMenu, deleteMenuByID, getMenu, getMenuByID, updateMenu } from '../controllers/menu.controller'
+import {
+  addMenu,
+  addRatings,
+  deleteMenuByID,
+  getMenu,
+  getMenuByID,
+  updateMenu,
+  updateRatings
+} from '../controllers/menu.controller'
+import { requireManagerOrAdmin, requireUser } from '../middlewares/auth'
 
 const MenuRouter = express.Router()
 
-// http://localhost:4000/menubook
+// http://localhost:4000/menu
 
-MenuRouter.get('/', getMenu)
-MenuRouter.get('/:id', getMenuByID)
-MenuRouter.post('/', addMenu)
-MenuRouter.put('/:id', updateMenu)
-MenuRouter.delete('/:id', deleteMenuByID)
+MenuRouter.get('/', requireUser, getMenu)
+MenuRouter.get('/:id', requireUser, getMenuByID)
+MenuRouter.post('/', requireManagerOrAdmin, addMenu)
+MenuRouter.post('/giverate', requireManagerOrAdmin, addRatings)
+MenuRouter.put('/edit/:id', requireManagerOrAdmin, updateMenu)
+MenuRouter.put('/editrating/:id', requireUser, updateRatings)
+MenuRouter.delete('/:id', requireManagerOrAdmin, deleteMenuByID)
 
 export default MenuRouter
