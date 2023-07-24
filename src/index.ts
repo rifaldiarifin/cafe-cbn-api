@@ -7,6 +7,8 @@ import CONFIG from './config/environment'
 // Connect Database
 import './utils/connectDB'
 
+import deserializeToken from './middlewares/deserializedToken'
+
 const app: Application = express()
 const port: number = CONFIG.port
 
@@ -22,6 +24,8 @@ app.use((_, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Headers', '*')
   next()
 })
+
+app.use(deserializeToken)
 
 // Routes
 routes(app)
