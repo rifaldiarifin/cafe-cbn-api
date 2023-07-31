@@ -17,8 +17,8 @@ const userDocumentSchema = new mongoose.Schema({
     type: String,
     default: 'noavatar.jpg'
   },
-  personalAccess: { type: Schema.Types.ObjectId, ref: 'personalAccess' },
-  personalContact: { type: Schema.Types.ObjectId, ref: 'personalContact' },
+  access: { type: Schema.Types.ObjectId, ref: 'userAccess' },
+  contact: { type: Schema.Types.ObjectId, ref: 'userContact' },
   createdAt: String,
   updatedAt: String
 })
@@ -31,7 +31,7 @@ const accessDocumentSchema = new mongoose.Schema({
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'personaldata'
+    ref: 'userdata'
   },
   role: {
     type: String,
@@ -53,7 +53,7 @@ const contactDocumentSchema = new mongoose.Schema({
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'personalData'
+    ref: 'userData'
   },
   email: {
     type: String,
@@ -68,6 +68,6 @@ const contactDocumentSchema = new mongoose.Schema({
   updatedAt: String
 })
 
-export const AccessDocumentModel = mongoose.model('personalAccess', accessDocumentSchema, 'personalAccess')
-export const ContactDocumentModel = mongoose.model('personalContact', contactDocumentSchema, 'personalContact')
-export const UserDocumentModel = mongoose.model('personalData', userDocumentSchema, 'personalData')
+export const AccessDocumentModel = mongoose.model('userAccess', accessDocumentSchema, 'userAccess')
+export const ContactDocumentModel = mongoose.model('userContact', contactDocumentSchema, 'userContact')
+export const UserDocumentModel = mongoose.model('userData', userDocumentSchema, 'userData')

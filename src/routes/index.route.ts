@@ -1,7 +1,7 @@
 import { type Application, type Router } from 'express'
 import HealthRouter from './health.route'
 import MenuRouter from './menu.route'
-import PersonalRouter from './personal.route'
+import userRouter from './user.route'
 import AuthRouter from './auth.route'
 import TransactionRouter from './transaction.route'
 
@@ -9,7 +9,7 @@ const _routes: Array<[string, Router]> = [
   ['/', HealthRouter],
   ['/menu', MenuRouter],
   ['/auth', AuthRouter],
-  ['/personal', PersonalRouter],
+  ['/user', userRouter],
   ['/transaction', TransactionRouter]
 ]
 
