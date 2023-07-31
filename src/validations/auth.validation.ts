@@ -10,10 +10,10 @@ export const createUserValidation = (payload: UserType) => {
     username: Joi.string().required(),
     password: Joi.string().required(),
     profileImage: Joi.string().allow('', null),
-    access: Joi.object().required(),
-    contact: Joi.object().required(),
-    personalAccess: Joi.required(),
-    personalContact: Joi.required(),
+    userAccess: Joi.object().required(),
+    userContact: Joi.object().required(),
+    access: Joi.required(),
+    contact: Joi.required(),
     createdAt: Joi.string().allow('', null),
     updatedAt: Joi.string().allow('', null)
   })
@@ -88,6 +88,14 @@ export const createSessionValidation = (payload: UserType) => {
   const schema = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required()
+  })
+
+  return schema.validate(payload)
+}
+
+export const refreshSessionValidation = (payload: string) => {
+  const schema = Joi.object({
+    refreshToken: Joi.string().required()
   })
 
   return schema.validate(payload)

@@ -26,6 +26,7 @@ import {
   updateMenuRatings,
   updateMenuType
 } from '../services/menu.service'
+import { findUserByID } from '../services/user.service'
 
 export const getMenu = async (req: Request, res: Response) => {
   try {
@@ -103,7 +104,7 @@ export const addRatings = async (req: Request, res: Response) => {
   try {
     const check: any = await findMenuOnlyByIDFromDB(req.body.uuidMenu)
     const menuRatings: any[] = [...check.menuRatings, rateid]
-
+    const { _id }: any = await findUserByID(res.locals.user.uuid)
     if (!check) {
       logger.error('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
@@ -115,7 +116,7 @@ export const addRatings = async (req: Request, res: Response) => {
     req.body.ratings._id = rateid
     req.body.ratings.uuid = uuidv4()
     req.body.ratings.menu = check._id
-    req.body.ratings.user = res.locals.user._doc._id
+    req.body.ratings.user = _id
     req.body.ratings.createdAt = timestamps()
     req.body.ratings.updatedAt = timestamps()
 
