@@ -57,7 +57,6 @@ const contactDocumentSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true,
     default: '-'
   },
   phone: {

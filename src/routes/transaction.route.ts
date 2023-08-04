@@ -10,6 +10,8 @@ import {
 
 const TransactionRouter = express.Router()
 
+// http://localhost:4000/transaction
+
 TransactionRouter.get('/', requireUser, getTransaction)
 TransactionRouter.get('/:id', requireUser, getTransactionByID)
 TransactionRouter.post('/', requireUser, createNewTransaction)

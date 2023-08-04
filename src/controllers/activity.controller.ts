@@ -89,12 +89,11 @@ export const deleteActivity = async (req: Request, res: Response) => {
   const id: string = req.params.id
 
   try {
-    const check: any = await findActivityByIDFromDB(id)
+    const check: any = await deleteActivityByID(id)
     if (!check) {
       logger.info('Data not found')
       return responseHandler([false, 422, 'Data not found', []], res)
     }
-    await deleteActivityByID(id)
     logger.info('Success delete activity')
     return responseHandler(['OK', 201, 'Success delete activity', []], res)
   } catch (error: any) {

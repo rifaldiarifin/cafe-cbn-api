@@ -8,7 +8,7 @@ export const addActivity = async (payload: ActivityType) => {
 
 // READ
 export const findActivityFromDB = async () => {
-  return await ActivityDocumentModel.find()
+  return await ActivityDocumentModel.find().select('_id uuid user title description createdAt updatedAt')
 }
 
 export const findActivityByIDFromDB = async (uuid: string) => {
@@ -22,5 +22,5 @@ export const updateActivityByID = async (payload: ActivityType) => {
 
 // DELETE
 export const deleteActivityByID = async (uuid: string) => {
-  return await ActivityDocumentModel.deleteOne({ uuid })
+  return await ActivityDocumentModel.findOneAndDelete({ uuid })
 }

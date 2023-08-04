@@ -2,6 +2,8 @@ import express, { type Request, type Response } from 'express'
 
 const HealthRouter = express.Router()
 
+// http://localhost:4000/
+
 HealthRouter.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',

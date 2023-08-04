@@ -8,10 +8,14 @@ export const createTransaction = async (payload: TransactionType) => {
 
 // READ
 export const findTransaction = async () => {
-  return await TransactionDocumentModel.find().populate('orders').exec()
+  return await TransactionDocumentModel.find()
+    .populate('orders', 'uuid menuCode name image price')
+    .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
 }
 export const findTransactionByID = async (uuid: string) => {
-  return await TransactionDocumentModel.findOne({ uuid }).populate('orders').exec()
+  return await TransactionDocumentModel.findOne({ uuid })
+    .populate('orders', 'uuid menuCode name image price')
+    .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
 }
 
 // UPDATE
@@ -21,5 +25,5 @@ export const updateTransactionByID = async (uuid: string, payload: TransactionTy
 
 // DELETE
 export const deleteTransactionByID = async (uuid: string) => {
-  return await TransactionDocumentModel.deleteOne({ uuid })
+  return await TransactionDocumentModel.findOneAndDelete({ uuid })
 }

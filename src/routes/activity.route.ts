@@ -10,6 +10,8 @@ import { requireUser } from '../middlewares/auth'
 
 const ActivityRouter = express.Router()
 
+// http://localhost:4000/activity
+
 ActivityRouter.get('/', requireUser, getActivity)
 ActivityRouter.get('/:id', requireUser, getActivityByID)
 ActivityRouter.post('/', requireUser, createActivity)

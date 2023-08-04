@@ -17,9 +17,9 @@ const MenuRouter = express.Router()
 MenuRouter.get('/', requireUser, getMenu)
 MenuRouter.get('/:id', requireUser, getMenuByID)
 MenuRouter.post('/', requireManagerOrAdmin, addMenu)
-MenuRouter.post('/giverate', requireManagerOrAdmin, addRatings)
+MenuRouter.post('/rate', requireManagerOrAdmin, addRatings)
 MenuRouter.put('/edit/:id', requireManagerOrAdmin, updateMenu)
-MenuRouter.put('/editrating/:id', requireUser, updateRatings)
+MenuRouter.put('/rate/:id', requireUser, updateRatings)
 MenuRouter.delete('/:id', requireManagerOrAdmin, deleteMenuByID)
 
 export default MenuRouter

@@ -112,13 +112,11 @@ export const deleteTransaction = async (req: Request, res: Response) => {
   const id: string = req.params.id
 
   try {
-    const check: any = await findTransactionByID(id)
+    const check: any = await deleteTransactionByID(id)
     if (!check) {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
-
-    await deleteTransactionByID(id)
     logger.info('Success delete transaction')
     return responseHandler(['OK', 201, 'Success delete transaction', []], res)
   } catch (error: any) {

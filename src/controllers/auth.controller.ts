@@ -34,6 +34,7 @@ export const createSession = async (req: Request, res: Response) => {
     if (!isValid) return responseHandler([false, 401, 'Invalid Username or Password', []], res)
 
     const accessToken = signJWT({ ...structureUser(user) }, { expiresIn: '1d' })
+    console.log({ ...user })
 
     return responseHandler(['OK', 200, 'Login Success', { accessToken }], res)
   } catch (error: any) {

@@ -9,7 +9,7 @@ import {
   updateUserByID,
   deleteUserByID,
   findUserByID,
-  getUsersFromDB,
+  findUsersFromDB,
   updateAccessUserByID,
   updateContactUserByID
 } from '../services/user.service'
@@ -25,32 +25,7 @@ import {
 } from '../validations/auth.validation'
 import { hashing } from '../utils/hashing'
 
-export const getUser = async (req: Request, res: Response) => {
-  try {
-    const users: any = await getUsersFromDB()
-    logger.info(`Success get users, result: ${users.length}`)
-    responseHandler(['OK', 200, `Success get users, result:${users.length}`, users], res)
-  } catch (error: any) {
-    logger.info(`ERROR: Users - Get All Users = ${error.message}`)
-    responseHandler([false, 404, error.message, []], res)
-  }
-}
-
-export const getUserByID = async (req: Request, res: Response) => {
-  const uuid: string = req.params.id
-  try {
-    const result: any = await findUserByID(uuid)
-    if (!result) {
-      logger.info('Data not found')
-      return responseHandler([false, 404, 'Data not found', []], res)
-    }
-    return responseHandler(['OK', 200, 'Success get user', result], res)
-  } catch (error: any) {
-    logger.error(`ERROR: Users - Get Users = ${error.message}`)
-    responseHandler([false, 422, error.message, []], res)
-  }
-}
-
+/* ###################### CREATE ########################### */
 export const addUser = async (req: Request, res: Response) => {
   const userid = new mongoose.Types.ObjectId()
   const accessid = new mongoose.Types.ObjectId()
@@ -112,6 +87,34 @@ export const addUser = async (req: Request, res: Response) => {
   }
 }
 
+/* ###################### READ ########################### */
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const users: any = await findUsersFromDB()
+    logger.info(`Success get users, result: ${users.length}`)
+    responseHandler(['OK', 200, `Success get users, result:${users.length}`, users], res)
+  } catch (error: any) {
+    logger.info(`ERROR: Users - Get All Users = ${error.message}`)
+    responseHandler([false, 404, error.message, []], res)
+  }
+}
+
+export const getUserByID = async (req: Request, res: Response) => {
+  const uuid: string = req.params.id
+  try {
+    const result: any = await findUserByID(uuid)
+    if (!result) {
+      logger.info('Data not found')
+      return responseHandler([false, 404, 'Data not found', []], res)
+    }
+    return responseHandler(['OK', 200, 'Success get user', result], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Users - Get Users = ${error.message}`)
+    responseHandler([false, 422, error.message, []], res)
+  }
+}
+
+/* ###################### UPDATE ########################### */
 export const updateUser = async (req: Request, res: Response) => {
   // Validate request body
   const userValidate: any = updateUserValidation(req.body)
@@ -181,20 +184,19 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 }
 
+/* ###################### DELETE ########################### */
 export const deleteUser = async (req: Request, res: Response) => {
   const id: string = req.params.id
   try {
-    const check: any = await findUserByID(id)
-    if (check) {
-      await deleteUserByID(check._id)
-      logger.info('Success delete user')
-      responseHandler(['OK', 201, 'Success delete user', []], res)
-    } else {
+    const check: any = await deleteUserByID(id)
+    if (!check) {
       logger.info('Data not found')
-      responseHandler([false, 404, 'Data not found', []], res)
+      return responseHandler([false, 404, 'Data not found', []], res)
     }
+    logger.info('Success delete user')
+    return responseHandler(['OK', 201, 'Success delete user', check], res)
   } catch (error: any) {
     logger.error(`ERROR: Users - Delete = ${error.message}`)
-    responseHandler([false, 422, error.message, []], res)
+    return responseHandler([false, 422, error.message, []], res)
   }
 }

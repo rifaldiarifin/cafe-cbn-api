@@ -16,23 +16,31 @@ export const createMenuType = async (payload: MenuCategoryType) => {
 
 // READ
 export const findMenuFromDB = async () => {
-  return await MenuDocumentModel.find().populate('menuRatings').populate('menuType').exec()
+  return await MenuDocumentModel.find()
+    .populate('menuRatings', '-_id rate comment')
+    .populate('menuType', '-_id category subCategory')
+    .select('_id uuid menuCode name image contents price sold createdAt updatedAt')
 }
 
 export const findMenuByIDFromDB = async (uuid: string) => {
-  return await MenuDocumentModel.findOne({ uuid }).populate('menuRatings').populate('menuType').exec()
+  return await MenuDocumentModel.findOne({ uuid })
+    .populate('menuRatings', '-_id rate comment')
+    .populate('menuType', '-_id category subCategory')
+    .select('_id uuid menuCode name image contents price sold createdAt updatedAt')
 }
 
 export const findMenuOnlyByIDFromDB = async (uuid: string) => {
-  return await MenuDocumentModel.findOne({ uuid })
+  return await MenuDocumentModel.findOne({ uuid }).select(
+    '_id uuid menuCode name image contents price sold menuRatings menuType createdAt updatedAt'
+  )
 }
 
 export const findRatingsOnlyByIDFromDB = async (uuid: string) => {
-  return await RatingsDocumentModel.findOne({ uuid })
+  return await RatingsDocumentModel.findOne({ uuid }).select('_id uuid menu user rate comment createdAt updatedAt')
 }
 
 export const findAllRatingsOnlyByIDFromDB = async (id: string) => {
-  return await RatingsDocumentModel.find({ menu: id })
+  return await RatingsDocumentModel.find({ menu: id }).select('_id uuid menu user rate comment createdAt updatedAt')
 }
 
 // UPDATE
@@ -50,9 +58,10 @@ export const updateMenuType = async (id: string, payload: MenuCategoryType) => {
 
 // DELETE
 export const deleteMenu = async (id: string) => {
-  const menu = await MenuDocumentModel.findOneAndDelete({ _id: id })
-  const rate = await RatingsDocumentModel.deleteMany({ menu: id })
-  const type = await CategoryTypeDocumentModel.findOneAndDelete({ menu: id })
+  const menu: any = await MenuDocumentModel.findOneAndDelete({ uuid: id }).select('_id')
+  if (!menu) return false
+  await RatingsDocumentModel.deleteMany({ menu: menu._id })
+  await CategoryTypeDocumentModel.deleteOne({ menu: menu._id })
 
-  return { menu, rate, type }
+  return menu
 }
