@@ -2,11 +2,9 @@ import express, { type Application, type Response, type NextFunction } from 'exp
 import cors from 'cors'
 import { routes } from './routes/index.route'
 import bodyParser from 'body-parser'
+import mongoose from 'mongoose'
 import CONFIG from './config/environment'
-
-// Connect Database
-import './utils/connectDB'
-
+import { logger } from './utils/logger'
 import deserializeToken from './middlewares/deserializedToken'
 
 const app: Application = express()
@@ -30,4 +28,24 @@ app.use(deserializeToken)
 // Routes
 routes(app)
 
-app.listen(port, () => console.log(`Server running on port ${port}`))
+// Connect to Database then start the server
+mongoose
+  .connect(`${CONFIG.db}`)
+  .then(() => {
+    logger.info('Connected to mongoDB...')
+    app.listen(port, () =>
+      setTimeout(() => {
+        logger.info(`
+      
+      Server running on port ${port}
+      http://localhost:${port}
+      `)
+      }, 800)
+    )
+  })
+  .catch((error: any) => {
+    logger.error(`Could not connect to Database, Please check your connection and restart server
+      ERR: Server - Starting = ${error.message}
+    `)
+    process.exit(1)
+  })

@@ -161,10 +161,11 @@ export const updateMenu = async (req: Request, res: Response) => {
       logger.error('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
-    // console.log(check)
+
     // Request body validation
     const menuValidate: any = updateMenuValidation(req.body)
     const typeValidate: any = updateMenuTypeValidation(req.body.type)
+
     // Check Body Request Function
     const checkReqBody = () => {
       return Object.keys(req.body ?? {}).length > 1
@@ -194,7 +195,6 @@ export const updateMenu = async (req: Request, res: Response) => {
     logger.info(checkAllReqBody() ? 'Success update menu' : 'Nothing Update')
     responseHandler(['OK', 201, checkAllReqBody() ? 'Success update menu' : 'Nothing Update', []], res)
   } catch (error: any) {
-    console.log(error)
     logger.error(`ERROR: Menu - Update = ${error.message}`)
     responseHandler([false, 422, error.message, []], res)
   }
