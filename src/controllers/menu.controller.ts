@@ -18,6 +18,7 @@ import {
   createMenuRatings,
   createMenuType,
   deleteMenu,
+  findAllRatingsOnlyByUserFromDB,
   findMenuByIDFromDB,
   findMenuFromDB,
   findMenuOnlyByIDFromDB,
@@ -26,7 +27,7 @@ import {
   updateMenuRatings,
   updateMenuType
 } from '../services/menu.service'
-import { findUserByID } from '../services/user.service'
+import { findIdUserByUuid, findUserByID } from '../services/user.service'
 
 /* ###################### CREATE ########################### */
 export const addMenu = async (req: Request, res: Response) => {
@@ -66,7 +67,7 @@ export const addMenu = async (req: Request, res: Response) => {
     await createMenuType(menuValidate.value.type)
 
     logger.info('Success add menu')
-    responseHandler(['OK', 201, 'Success add menu', []], res)
+    responseHandler(['Created', 201, 'Success add menu', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Menu - Create = ${error.message}`)
     responseHandler([false, 422, `ERROR: Menu - Create = ${error.message}`, []], res)
@@ -99,12 +100,12 @@ export const addRatings = async (req: Request, res: Response) => {
     const ratingsValidate = createMenuRatingsValidation(req.body.ratings)
 
     if (menuValidate.error) {
-      logger.error(`ERROR: Menu - Give Rating = ${menuValidate.error.details[0].message}`)
+      logger.error(`ERROR: Menu - Add Rate = ${menuValidate.error.details[0].message}`)
       return responseHandler([false, 422, menuValidate.error.details[0].message, []], res)
     }
 
     if (ratingsValidate.error) {
-      logger.error(`ERROR: Menu - Give Rating = ${ratingsValidate.error.details[0].message}`)
+      logger.error(`ERROR: Menu - Add Rate = ${ratingsValidate.error.details[0].message}`)
       return responseHandler([false, 422, ratingsValidate.error.details[0].message, []], res)
     }
 
@@ -112,14 +113,14 @@ export const addRatings = async (req: Request, res: Response) => {
       await createMenuRatings(menuValidate.value.ratings)
       await updateMenuFromDB(check._id, menuValidate.value)
       logger.info('Success add ratings to menu')
-      responseHandler(['OK', 201, 'Success ratings to menu', []], res)
+      responseHandler(['Created', 201, 'Success ratings to menu', []], res)
     } catch (error: any) {
-      logger.error(`ERROR: Menu - Give Rating = ${error.message}`)
-      responseHandler([false, 422, `ERROR: Menu - Give Rating = ${error.message}`, []], res)
+      logger.error(`ERROR: Menu - Add Rate = ${error.message}`)
+      responseHandler([false, 422, `ERROR: Menu - Add Rate = ${error.message}`, []], res)
     }
   } catch (error: any) {
-    logger.error(`ERROR: Menu - Give Rating = ${error.message}`)
-    responseHandler([false, 422, `ERROR: Menu - Give Rating = ${error.message}`, []], res)
+    logger.error(`ERROR: Menu - Add Rate = ${error.message}`)
+    responseHandler([false, 422, `ERROR: Menu - Add Rate = ${error.message}`, []], res)
   }
 }
 
@@ -141,13 +142,46 @@ export const getMenuByID = async (req: Request, res: Response) => {
     const result: any = await findMenuByIDFromDB(id)
     if (!result) {
       logger.error('Data not found')
-      return responseHandler([false, 404, 'Data not found', result], res)
+      return responseHandler([false, 404, 'Data not found', []], res)
     }
     logger.info('Success get menu data')
     return responseHandler(['OK', 200, 'Success get menu data', result], res)
   } catch (error: any) {
     logger.info(`ERROR: Menu - Get All User = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Menu - Get All User = ${error.message}`, []], res)
+  }
+}
+
+export const getRatingByUser = async (req: Request, res: Response) => {
+  const id: string = res.locals.user.uuid
+  try {
+    const { _id }: any = await findIdUserByUuid(id)
+    const result: any = await findAllRatingsOnlyByUserFromDB(_id)
+    if (!result) {
+      logger.error('Data not found')
+      return responseHandler([false, 404, 'Data not found', []], res)
+    }
+    logger.info('Success get rating menu data')
+    return responseHandler(['OK', 200, 'Success get rating menu data', result], res)
+  } catch (error: any) {
+    logger.info(`ERROR: Menu - Get Rating By User = ${error.message}`)
+    return responseHandler([false, 422, `ERROR: Menu - Get Rating By User = ${error.message}`, []], res)
+  }
+}
+
+export const getRatingByID = async (req: Request, res: Response) => {
+  const id: string = req.params.id
+  try {
+    const result: any = await findRatingsOnlyByIDFromDB(id)
+    if (!result) {
+      logger.error('Data not found')
+      return responseHandler([false, 404, 'Data not found', []], res)
+    }
+    logger.info('Success get rating menu data')
+    return responseHandler(['OK', 200, 'Success get rating menu data', result], res)
+  } catch (error: any) {
+    logger.info(`ERROR: Menu - Get Rating = ${error.message}`)
+    return responseHandler([false, 422, `ERROR: Menu - Get Rating = ${error.message}`, []], res)
   }
 }
 
@@ -193,10 +227,10 @@ export const updateMenu = async (req: Request, res: Response) => {
       await updateMenuType(check._id, menuValidate.value.type)
     }
     logger.info(checkAllReqBody() ? 'Success update menu' : 'Nothing Update')
-    responseHandler(['OK', 201, checkAllReqBody() ? 'Success update menu' : 'Nothing Update', []], res)
+    return responseHandler(['OK', 200, checkAllReqBody() ? 'Success update menu' : 'Nothing Update', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Menu - Update = ${error.message}`)
-    responseHandler([false, 422, error.message, []], res)
+    return responseHandler([false, 422, error.message, []], res)
   }
 }
 
@@ -222,7 +256,7 @@ export const updateRatings = async (req: Request, res: Response) => {
 
     await updateMenuRatings(check._id, value)
     logger.info('Success update rating')
-    responseHandler(['OK', 201, 'Success update rating', []], res)
+    responseHandler(['OK', 200, 'Success update rating', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Menu - Update Rating = ${error.message}`)
     responseHandler([false, 422, error.message, []], res)
@@ -239,7 +273,7 @@ export const deleteMenuByID = async (req: Request, res: Response) => {
       return responseHandler([false, 404, 'Data not found', []], res)
     }
     logger.info('Success delete menu')
-    return responseHandler(['OK', 201, 'Success delete menu', []], res)
+    return responseHandler(['OK', 200, 'Success delete menu', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Menu - Delete = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)

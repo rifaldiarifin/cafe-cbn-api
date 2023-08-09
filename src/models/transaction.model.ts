@@ -10,6 +10,7 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
+  user: { type: Schema.Types.ObjectId, ref: 'userData' },
   customer: String,
   orders: [{ type: Schema.Types.ObjectId, ref: 'menuData' }],
   bill: Number,

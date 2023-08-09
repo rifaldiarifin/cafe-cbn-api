@@ -6,7 +6,7 @@ export const createUserValidation = (payload: UserType) => {
     _id: Joi.required(),
     uuid: Joi.required(),
     firstname: Joi.string().required(),
-    lastname: Joi.string().required(),
+    lastname: Joi.string().allow('', null),
     username: Joi.string().required(),
     password: Joi.string().required(),
     profileImage: Joi.string().allow('', null),
@@ -27,7 +27,6 @@ export const createAccessUserValidation = (payload: UserAccessType) => {
     uuid: Joi.required(),
     user: Joi.required(),
     role: Joi.string().allow('', null),
-    shift: Joi.string().allow('', null),
     createdAt: Joi.string().allow('', null),
     updatedAt: Joi.string().allow('', null)
   })
@@ -67,7 +66,6 @@ export const updateUserValidation = (payload: UserType) => {
 export const updateAccessUserValidation = (payload: UserAccessType) => {
   const schema = Joi.object({
     role: Joi.string().allow('', null),
-    shift: Joi.string().allow('', null),
     updatedAt: Joi.string().allow('', null)
   })
 

@@ -1,8 +1,15 @@
 import express from 'express'
-import { requireAdmin, requireUser } from '../middlewares/auth'
+import {
+  requireKitchenOrCashier,
+  requireManager,
+  requireManagerOrAdmin,
+  requireRegularOrMachine,
+  requireUser
+} from '../middlewares/auth'
 import {
   createNewTransaction,
   deleteTransaction,
+  getMyTransaction,
   getTransaction,
   getTransactionByID,
   updateTransaction
@@ -12,10 +19,11 @@ const TransactionRouter = express.Router()
 
 // http://localhost:4000/transaction
 
-TransactionRouter.get('/', requireUser, getTransaction)
+TransactionRouter.get('/', requireManagerOrAdmin, getTransaction)
+TransactionRouter.get('/me', requireRegularOrMachine, getMyTransaction)
 TransactionRouter.get('/:id', requireUser, getTransactionByID)
-TransactionRouter.post('/', requireUser, createNewTransaction)
-TransactionRouter.put('/:id', requireUser, updateTransaction)
-TransactionRouter.delete('/:id', requireAdmin, deleteTransaction)
+TransactionRouter.post('/', requireRegularOrMachine, createNewTransaction)
+TransactionRouter.put('/:id', requireKitchenOrCashier, updateTransaction)
+TransactionRouter.delete('/:id', requireManager, deleteTransaction)
 
 export default TransactionRouter

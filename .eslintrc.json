@@ -11,7 +11,7 @@
     "project": ["**/tsconfig.json"]
   },
   "plugins": ["@typescript-eslint"],
-  "ignorePatterns": ["**/build/*", "**/node_modules", "**/public/*", "**/tsconfig.json"],
+  "ignorePatterns": ["**/build/*", "**/node_modules", "**/public/*", "**/tsconfig.json", "**/jest.config.js"],
   "rules": {
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-confusing-void-expression": "off",

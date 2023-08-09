@@ -17,7 +17,6 @@ export interface UserAccessType {
   uuid: string
   user: string
   role: string
-  shift: string
   createAt: Date
   updateAt: Date
 }

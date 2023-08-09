@@ -80,7 +80,7 @@ export const addUser = async (req: Request, res: Response) => {
     await createUserAccess(userValidate.value.userAccess)
     await createUserContact(userValidate.value.userContact)
     logger.info('Success add user!')
-    responseHandler(['OK', 201, 'Success add user!', []], res)
+    responseHandler(['Created', 201, 'Success add user!', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Users - Create = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
@@ -91,7 +91,7 @@ export const addUser = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   try {
     const users: any = await findUsersFromDB()
-    logger.info(`Success get users, result: ${users.length}`)
+    logger.info('Success get users')
     responseHandler(['OK', 200, `Success get users, result:${users.length}`, users], res)
   } catch (error: any) {
     logger.info(`ERROR: Users - Get All Users = ${error.message}`)
@@ -107,6 +107,7 @@ export const getUserByID = async (req: Request, res: Response) => {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
+    logger.info('Success get user')
     return responseHandler(['OK', 200, 'Success get user', result], res)
   } catch (error: any) {
     logger.error(`ERROR: Users - Get Users = ${error.message}`)
@@ -156,28 +157,27 @@ export const updateUser = async (req: Request, res: Response) => {
   // Success validate
   try {
     const getUUID: any = await findUserByID(req.params.id)
-    if (getUUID) {
-      if (checkAllReqBody()) {
-        userValidate.value.updatedAt = timestamps()
-        await updateUserByID(getUUID._id, userValidate.value)
-      }
-
-      if (checkReqAccess()) {
-        userValidate.value.userAccess.updatedAt = timestamps()
-        await updateAccessUserByID(getUUID._id, userValidate.value.userAccess)
-      }
-
-      if (checkReqContact()) {
-        userValidate.value.userContact.updatedAt = timestamps()
-        await updateContactUserByID(getUUID._id, userValidate.value.userContact)
-      }
-
-      logger.info(checkAllReqBody() ? 'Success update user' : 'Nothing update')
-      responseHandler(['OK', 201, checkAllReqBody() ? 'Success update user' : 'Nothing update', []], res)
-    } else {
+    if (!getUUID) {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
+    if (checkAllReqBody()) {
+      userValidate.value.updatedAt = timestamps()
+      await updateUserByID(getUUID._id, userValidate.value)
+    }
+
+    if (checkReqAccess()) {
+      userValidate.value.userAccess.updatedAt = timestamps()
+      await updateAccessUserByID(getUUID._id, userValidate.value.userAccess)
+    }
+
+    if (checkReqContact()) {
+      userValidate.value.userContact.updatedAt = timestamps()
+      await updateContactUserByID(getUUID._id, userValidate.value.userContact)
+    }
+
+    logger.info(checkAllReqBody() ? 'Success update user' : 'Nothing update')
+    return responseHandler(['OK', 200, checkAllReqBody() ? 'Success update user' : 'Nothing update', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Users - Update = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
@@ -194,7 +194,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       return responseHandler([false, 404, 'Data not found', []], res)
     }
     logger.info('Success delete user')
-    return responseHandler(['OK', 201, 'Success delete user', check], res)
+    return responseHandler(['OK', 200, 'Success delete user', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Users - Delete = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)

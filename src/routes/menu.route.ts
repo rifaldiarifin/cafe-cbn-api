@@ -5,6 +5,8 @@ import {
   deleteMenuByID,
   getMenu,
   getMenuByID,
+  getRatingByID,
+  getRatingByUser,
   updateMenu,
   updateRatings
 } from '../controllers/menu.controller'
@@ -16,9 +18,11 @@ const MenuRouter = express.Router()
 
 MenuRouter.get('/', requireUser, getMenu)
 MenuRouter.get('/:id', requireUser, getMenuByID)
+MenuRouter.get('/rate/user', requireUser, getRatingByUser)
+MenuRouter.get('/rate/:id', requireUser, getRatingByID)
 MenuRouter.post('/', requireManagerOrAdmin, addMenu)
-MenuRouter.post('/rate', requireManagerOrAdmin, addRatings)
-MenuRouter.put('/edit/:id', requireManagerOrAdmin, updateMenu)
+MenuRouter.post('/rate', requireUser, addRatings)
+MenuRouter.put('/:id', requireManagerOrAdmin, updateMenu)
 MenuRouter.put('/rate/:id', requireUser, updateRatings)
 MenuRouter.delete('/:id', requireManagerOrAdmin, deleteMenuByID)
 

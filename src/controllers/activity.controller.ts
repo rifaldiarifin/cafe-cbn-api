@@ -3,16 +3,43 @@ import { logger } from '../utils/logger'
 import { v4 as uuidv4 } from 'uuid'
 import responseHandler from '../utils/responsehandle'
 import { timestamps } from '../utils/date'
-import { findUserByID } from '../services/user.service'
+import { findIdUserByUuid } from '../services/user.service'
 import { createActivityValidation, updateActivityValidation } from '../validations/activity.validation'
 import {
   addActivity,
   deleteActivityByID,
   findActivityByIDFromDB,
   findActivityFromDB,
+  findMyActivityFromDB,
   updateActivityByID
 } from '../services/activity.service'
 
+// CREATE
+export const createActivity = async (req: Request, res: Response) => {
+  const { _id }: any = await findIdUserByUuid(res.locals.user.uuid)
+  req.body.uuid = uuidv4()
+  req.body.user = _id
+  req.body.createdAt = timestamps()
+  req.body.updatedAt = timestamps()
+
+  const { error, value } = createActivityValidation(req.body)
+
+  if (error) {
+    logger.error(`ERROR: Activity - Create = ${error.details[0].message}`)
+    return responseHandler([false, 422, `ERROR: Activity - Create = ${error.details[0].message}`, []], res)
+  }
+
+  try {
+    await addActivity(value)
+    logger.info('Success create activity')
+    return responseHandler(['Created', 201, 'Success create activity', []], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Activity - Create = ${error.message}`)
+    return responseHandler([false, 422, `ERROR: Activity - Create = ${error.message}`, []], res)
+  }
+}
+
+// READ
 export const getActivity = async (req: Request, res: Response) => {
   try {
     const result: any = await findActivityFromDB()
@@ -41,30 +68,21 @@ export const getActivityByID = async (req: Request, res: Response) => {
   }
 }
 
-export const createActivity = async (req: Request, res: Response) => {
-  const { _id }: any = await findUserByID(res.locals.user.uuid)
-  req.body.uuid = uuidv4()
-  req.body.user = _id
-  req.body.createdAt = timestamps()
-  req.body.updatedAt = timestamps()
-
-  const { error, value } = createActivityValidation(req.body)
-
-  if (error) {
-    logger.error(`ERROR: Activity - Create = ${error.details[0].message}`)
-    return responseHandler([false, 422, `ERROR: Activity - Create = ${error.details[0].message}`, []], res)
-  }
+export const getMyActivity = async (req: Request, res: Response) => {
+  const uuid: string = res.locals.user.uuid
 
   try {
-    await addActivity(value)
-    logger.info('Success create activity')
-    return responseHandler(['OK', 201, 'Success create activity', []], res)
+    const { _id }: any = await findIdUserByUuid(uuid)
+    const result: any = await findMyActivityFromDB(_id)
+    logger.info('Success get your activity')
+    return responseHandler(['OK', 200, 'Success get your activity', result], res)
   } catch (error: any) {
-    logger.error(`ERROR: Activity - Create = ${error.message}`)
-    return responseHandler([false, 422, `ERROR: Activity - Create = ${error.message}`, []], res)
+    logger.error(`ERROR: Activity - Get = ${error.message}`)
+    return responseHandler([false, 422, `ERROR: Activity - Get = ${error.message}`, []], res)
   }
 }
 
+// UPDATE
 export const updateActivity = async (req: Request, res: Response) => {
   req.body.updatedAt = timestamps()
 
@@ -78,13 +96,14 @@ export const updateActivity = async (req: Request, res: Response) => {
   try {
     await updateActivityByID(value)
     logger.info('Success update activity')
-    return responseHandler(['OK', 201, 'Success update activity', []], res)
+    return responseHandler(['OK', 200, 'Success update activity', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Activity - Update = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Activity - Update = ${error.message}`, []], res)
   }
 }
 
+// DELETE
 export const deleteActivity = async (req: Request, res: Response) => {
   const id: string = req.params.id
 
@@ -95,7 +114,7 @@ export const deleteActivity = async (req: Request, res: Response) => {
       return responseHandler([false, 422, 'Data not found', []], res)
     }
     logger.info('Success delete activity')
-    return responseHandler(['OK', 201, 'Success delete activity', []], res)
+    return responseHandler(['OK', 200, 'Success delete activity', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Activity - Delete = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Activity - Delete = ${error.message}`, []], res)

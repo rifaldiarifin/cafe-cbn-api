@@ -37,10 +37,6 @@ const accessDocumentSchema = new mongoose.Schema({
     type: String,
     default: 'cashier'
   },
-  shift: {
-    type: String,
-    default: '-'
-  },
   createdAt: String,
   updatedAt: String
 })

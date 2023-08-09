@@ -9,12 +9,64 @@ import { createTransactionValidation, updateTransactionValidation } from '../val
 import {
   createTransaction,
   deleteTransactionByID,
+  findMyTransaction,
   findTransaction,
   findTransactionByID,
   updateTransactionByID
 } from '../services/transaction.service'
-import { findMenuOnlyByIDFromDB } from '../services/menu.service'
+import { findMenuOnlyByIDFromDB, updateSoldMenuFromDB } from '../services/menu.service'
+import { findIdUserByUuid } from '../services/user.service'
 
+// CREATE
+export const createNewTransaction = async (req: Request, res: Response) => {
+  const getIDofOrder = async () => {
+    const catchIDOfOrder: any[] = []
+    const catchPriceOfOrder: number[] = []
+    for (let x = 0; x < req.body.orders.length; x++) {
+      const order = req.body.orders[x]
+      const dataOrder: any = await findMenuOnlyByIDFromDB(order)
+      await updateSoldMenuFromDB(order, parseInt(dataOrder.sold) + 1)
+      catchIDOfOrder.push(dataOrder._id)
+      catchPriceOfOrder.push(dataOrder.price)
+    }
+    const bill = catchPriceOfOrder.reduce((total, curr) => {
+      return total + curr
+    })
+    return [catchIDOfOrder, bill]
+  }
+
+  const ordersid = await getIDofOrder()
+  const transid = new mongoose.Types.ObjectId()
+  const { _id }: any = await findIdUserByUuid(res.locals.user.uuid)
+
+  req.body._id = transid
+  req.body.uuid = uuidv4()
+  req.body.orderCode = transactionCode()
+  req.body.user = _id
+  req.body.orders = ordersid[0]
+  req.body.bill = ordersid[1]
+  req.body.statusOrder = 'Pending'
+  req.body.createdAt = timestamps()
+  req.body.updatedAt = timestamps()
+
+  const { error, value } = createTransactionValidation(req.body)
+
+  if (error) {
+    logger.error(`ERROR: Transaction - Create = ${error.details[0].message}`)
+    return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.details[0].message}`, []], res)
+  }
+
+  try {
+    await createTransaction(value)
+    logger.info('Success create transaction')
+    return responseHandler(['Created', 201, 'Success create transaction', []], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Transaction - Create = ${error.message}`)
+    return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.message}`, []], res)
+  }
+}
+
+// READ
 export const getTransaction = async (req: Request, res: Response) => {
   try {
     const result: any = await findTransaction()
@@ -42,52 +94,21 @@ export const getTransactionByID = async (req: Request, res: Response) => {
     responseHandler([false, 422, `ERROR: Transaction - Get = ${error.message}`, []], res)
   }
 }
-
-export const createNewTransaction = async (req: Request, res: Response) => {
-  const getIDofOrder = async () => {
-    const catchIDOfOrder: any[] = []
-    const catchPriceOfOrder: number[] = []
-    for (let x = 0; x < req.body.orders.length; x++) {
-      const order = req.body.orders[x]
-      const dataOrder: any = await findMenuOnlyByIDFromDB(order)
-      catchIDOfOrder.push(dataOrder._id)
-      catchPriceOfOrder.push(dataOrder.price)
-    }
-    const bill = catchPriceOfOrder.reduce((total, curr) => {
-      return total + curr
-    })
-    return [catchIDOfOrder, bill]
-  }
-
-  const ordersid = await getIDofOrder()
-  const transid = new mongoose.Types.ObjectId()
-
-  req.body._id = transid
-  req.body.uuid = uuidv4()
-  req.body.orderCode = transactionCode()
-  req.body.orders = ordersid[0]
-  req.body.bill = ordersid[1]
-  req.body.statusOrder = 'New Order'
-  req.body.createdAt = timestamps()
-  req.body.updatedAt = timestamps()
-
-  const { error, value } = createTransactionValidation(req.body)
-
-  if (error) {
-    logger.error(`ERROR: Transaction - Create = ${error.details[0].message}`)
-    return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.details[0].message}`, []], res)
-  }
+export const getMyTransaction = async (req: Request, res: Response) => {
+  const id: string = res.locals.user.uuid
 
   try {
-    await createTransaction(value)
-    logger.info('Success create transaction')
-    return responseHandler(['OK', 201, 'Success create transaction', []], res)
+    const { _id }: any = await findIdUserByUuid(id)
+    const result: any = await findMyTransaction(_id)
+    logger.info('Success get your transaction')
+    return responseHandler(['OK', 200, 'Success get your transaction', result], res)
   } catch (error: any) {
-    logger.error(`ERROR: Transaction - Create = ${error.message}`)
-    return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.message}`, []], res)
+    logger.info(`ERROR: Transaction - Get = ${error.message}`)
+    responseHandler([false, 422, `ERROR: Transaction - Get = ${error.message}`, []], res)
   }
 }
 
+// UPDATE
 export const updateTransaction = async (req: Request, res: Response) => {
   const id: string = req.params.id
   req.body.updatedAt = timestamps()
@@ -101,7 +122,7 @@ export const updateTransaction = async (req: Request, res: Response) => {
   try {
     await updateTransactionByID(id, value)
     logger.info('Success update transaction')
-    return responseHandler(['OK', 201, 'Success update transaction', []], res)
+    return responseHandler(['OK', 200, 'Success update transaction', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Transaction - Update = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Transaction - Update = ${error.message}`, []], res)
@@ -117,8 +138,12 @@ export const deleteTransaction = async (req: Request, res: Response) => {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
+    if (check.statusOrder !== 'Done') {
+      logger.info('Transaction has not been completed, please try again later')
+      return responseHandler([false, 422, 'Transaction has not been completed, please try again later', []], res)
+    }
     logger.info('Success delete transaction')
-    return responseHandler(['OK', 201, 'Success delete transaction', []], res)
+    return responseHandler(['OK', 200, 'Success delete transaction', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Transaction - Delete = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Transaction - Delete = ${error.message}`, []], res)

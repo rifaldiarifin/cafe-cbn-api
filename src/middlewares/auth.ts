@@ -8,6 +8,20 @@ export const requireUser = (req: Request, res: Response, next: NextFunction) => 
   return next()
 }
 
+export const requireKitchen = (req: Request, res: Response, next: NextFunction) => {
+  const user = res.locals.user
+  if (!user) return res.sendStatus(403)
+  if (user.role !== 'kitchen') return res.sendStatus(403)
+  return next()
+}
+
+export const requireCashier = (req: Request, res: Response, next: NextFunction) => {
+  const user = res.locals.user
+  if (!user) return res.sendStatus(403)
+  if (user.role !== 'cashier') return res.sendStatus(403)
+  return next()
+}
+
 export const requireManager = (req: Request, res: Response, next: NextFunction) => {
   const user = res.locals.user
   if (!user) return res.sendStatus(403)
@@ -19,6 +33,24 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
   const user = res.locals.user
   if (!user) return res.sendStatus(403)
   if (user.role !== 'admin') return res.sendStatus(403)
+  return next()
+}
+
+export const requireKitchenOrCashier = (req: Request, res: Response, next: NextFunction) => {
+  const user = res.locals.user
+  if (!user) return res.sendStatus(403)
+  if (user.role !== 'kitchen' && user.role !== 'cashier') {
+    return res.sendStatus(403)
+  }
+  return next()
+}
+
+export const requireRegularOrMachine = (req: Request, res: Response, next: NextFunction) => {
+  const user = res.locals.user
+  if (!user) return res.sendStatus(403)
+  if (user.role !== 'regular' && user.role !== 'machine') {
+    return res.sendStatus(403)
+  }
   return next()
 }
 

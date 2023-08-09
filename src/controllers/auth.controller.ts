@@ -53,15 +53,11 @@ export const refreshSession = async (req: Request, res: Response) => {
   try {
     const { decoded }: any = verifyJWT(value.refreshToken)
 
-    const user = await findUserByUsername(decoded._doc.username)
+    const user = await findUserByUsername(decoded.username)
     if (!user) return false
 
-    const accessToken = signJWT(
-      {
-        ...structureUser(user)
-      },
-      { expiresIn: '1d' }
-    )
+    const accessToken = signJWT({ ...structureUser(user) }, { expiresIn: '1d' })
+
     return responseHandler(['OK', 200, 'Refresh Session Success', { accessToken }], res)
   } catch (error: any) {
     logger.error(`ERROR: Auth - Refresh Session = ${error.message}`)

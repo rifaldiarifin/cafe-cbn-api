@@ -26,7 +26,7 @@ const menuSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  menuRatings: [{ type: Schema.Types.ObjectId, ref: 'menuRatings' }],
+  menuRatings: [{ type: Schema.Types.ObjectId, ref: 'menuRatings', default: {} }],
   menuType: { type: Schema.Types.ObjectId, ref: 'menuType' },
   createdAt: String,
   updatedAt: String

@@ -39,13 +39,17 @@ export const findRatingsOnlyByIDFromDB = async (uuid: string) => {
   return await RatingsDocumentModel.findOne({ uuid }).select('_id uuid menu user rate comment createdAt updatedAt')
 }
 
-export const findAllRatingsOnlyByIDFromDB = async (id: string) => {
-  return await RatingsDocumentModel.find({ menu: id }).select('_id uuid menu user rate comment createdAt updatedAt')
+export const findAllRatingsOnlyByUserFromDB = async (id: string) => {
+  return await RatingsDocumentModel.find({ user: id }).select('_id uuid menu user rate comment createdAt updatedAt')
 }
 
 // UPDATE
 export const updateMenuFromDB = async (id: string, payload: MenuType) => {
   return await MenuDocumentModel.updateOne({ _id: id }, { $set: payload })
+}
+
+export const updateSoldMenuFromDB = async (uuid: string, sold: number) => {
+  return await MenuDocumentModel.updateOne({ uuid }, { $set: { sold } })
 }
 
 export const updateMenuRatings = async (id: string, payload: MenuRatingsType) => {

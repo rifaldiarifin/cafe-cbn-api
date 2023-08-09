@@ -6,6 +6,7 @@ export const createTransactionValidation = (payload: TransactionType) => {
     _id: Joi.required(),
     uuid: Joi.string().required(),
     orderCode: Joi.string().required(),
+    user: Joi.required(),
     customer: Joi.string().required(),
     orders: Joi.array().required(),
     bill: Joi.number().required(),

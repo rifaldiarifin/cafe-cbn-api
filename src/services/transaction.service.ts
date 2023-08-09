@@ -12,6 +12,11 @@ export const findTransaction = async () => {
     .populate('orders', 'uuid menuCode name image price')
     .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
 }
+export const findMyTransaction = async (user: string) => {
+  return await TransactionDocumentModel.find({ user })
+    .populate('orders', 'uuid menuCode name image price')
+    .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
+}
 export const findTransactionByID = async (uuid: string) => {
   return await TransactionDocumentModel.findOne({ uuid })
     .populate('orders', 'uuid menuCode name image price')

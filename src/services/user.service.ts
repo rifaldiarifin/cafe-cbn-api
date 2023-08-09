@@ -3,15 +3,15 @@ import { AccessDocumentModel, ContactDocumentModel, UserDocumentModel } from '..
 
 /* ###################### CREATE ########################### */
 export const createUser = async (payload: UserType) => {
-  return await new UserDocumentModel(payload).save()
+  return await UserDocumentModel.create(payload)
 }
 
 export const createUserAccess = async (payload: UserAccessType) => {
-  return await new AccessDocumentModel(payload).save()
+  return await AccessDocumentModel.create(payload)
 }
 
 export const createUserContact = async (payload: UserContactType) => {
-  return await new ContactDocumentModel(payload).save()
+  return await ContactDocumentModel.create(payload)
 }
 
 /* ###################### READ ########################### */
@@ -27,6 +27,10 @@ export const findUserByID = async (uuid: string) => {
     .populate('access', '-_id role shift')
     .populate('contact', '-_id email phone')
     .select('_id uuid firstname lastname username password profileImage createdAt updatedAt')
+}
+
+export const findIdUserByUuid = async (uuid: string) => {
+  return await UserDocumentModel.findOne({ uuid }).select('_id')
 }
 
 /* ###################### UPDATE ########################### */
