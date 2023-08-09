@@ -7,17 +7,17 @@ import {
   getActivityByID,
   updateActivity
 } from '../controllers/activity.controller'
-import { requireUser } from '../middlewares/auth'
+import { requireAdmin, requireManagerOrAdmin, requireUser } from '../middlewares/auth'
 
 const ActivityRouter = express.Router()
 
 // http://localhost:4000/activity
 
-ActivityRouter.get('/', requireUser, getActivity)
+ActivityRouter.get('/', requireManagerOrAdmin, getActivity)
 ActivityRouter.get('/me', requireUser, getMyActivity)
 ActivityRouter.get('/:id', requireUser, getActivityByID)
 ActivityRouter.post('/', requireUser, createActivity)
-ActivityRouter.put('/:id', requireUser, updateActivity)
-ActivityRouter.delete('/:id', requireUser, deleteActivity)
+ActivityRouter.put('/:id', requireAdmin, updateActivity)
+ActivityRouter.delete('/:id', requireManagerOrAdmin, deleteActivity)
 
 export default ActivityRouter
