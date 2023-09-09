@@ -28,7 +28,7 @@ export const createSession = async (req: Request, res: Response) => {
 
   try {
     const user: any = await findUserByUsername(value.username)
-    if (!user) return responseHandler([false, 401, 'Account not found', []], res)
+    if (!user) return responseHandler([false, 404, 'Account not found', []], res)
     const isValid = checkPassword(value.password, user.password)
 
     if (!isValid) return responseHandler([false, 401, 'Invalid Username or Password', []], res)
