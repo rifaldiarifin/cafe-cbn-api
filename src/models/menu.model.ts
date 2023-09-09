@@ -18,7 +18,10 @@ const menuSchema = new mongoose.Schema({
     type: String,
     default: 'nofoodphoto.jpg'
   },
-  contents: Array,
+  contents: {
+    type: String,
+    default: '-'
+  },
   price: {
     type: Number
   },
@@ -59,6 +62,8 @@ const menuTypeSchema = new mongoose.Schema({
     unique: true
   },
   menu: { type: Schema.Types.ObjectId, ref: 'menuData' },
+  categoryImage: String,
+  subCategoryImage: String,
   category: String,
   subCategory: String,
   createdAt: String,

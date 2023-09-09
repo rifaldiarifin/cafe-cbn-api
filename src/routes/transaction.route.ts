@@ -1,7 +1,7 @@
 import express from 'express'
 import {
   requireKitchenOrCashier,
-  requireManager,
+  requireMachine,
   requireManagerOrAdmin,
   requireRegularOrMachine,
   requireUser
@@ -22,8 +22,8 @@ const TransactionRouter = express.Router()
 TransactionRouter.get('/', requireManagerOrAdmin, getTransaction)
 TransactionRouter.get('/me', requireRegularOrMachine, getMyTransaction)
 TransactionRouter.get('/:id', requireUser, getTransactionByID)
-TransactionRouter.post('/', requireRegularOrMachine, createNewTransaction)
+TransactionRouter.post('/', requireMachine, createNewTransaction)
 TransactionRouter.put('/:id', requireKitchenOrCashier, updateTransaction)
-TransactionRouter.delete('/:id', requireManager, deleteTransaction)
+TransactionRouter.delete('/:id', requireManagerOrAdmin, deleteTransaction)
 
 export default TransactionRouter

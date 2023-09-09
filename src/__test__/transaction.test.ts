@@ -182,7 +182,10 @@ const menu2: any = createMenuPayload(menuPayload2)
 const { transaction1 } = {
   transaction1: {
     customer: 'Hello World',
-    orders: [menu1.uuid, menu2.uuid]
+    orders: [
+      { uuid: `${menu1.uuid}`, qty: 2 },
+      { uuid: `${menu2.uuid}`, qty: 1 }
+    ]
   }
 }
 
@@ -237,7 +240,7 @@ describe('**************** Transaction ****************', () => {
       })
     })
 
-    describe('if user is already logged in as Regular or Machine', () => {
+    describe('if user is already logged in as Machine', () => {
       it('Try request post, should return a statusCode 201, Created', async () => {
         const { body } = await supertest(app).post('/auth/login').send(userMachine)
         const resultReq = await supertest(app)
@@ -327,7 +330,7 @@ describe('**************** Transaction ****************', () => {
       })
     })
 
-    describe('if user is already logged in as Regular or Machine', () => {
+    describe('if user is already logged in as Machine', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
         const { body } = await supertest(app).post('/auth/login').send(userMachine)
         const resultReq = await supertest(app)
@@ -356,17 +359,17 @@ describe('**************** Transaction ****************', () => {
     describe('if user not logged in', () => {
       it('Try request put, should return a statusCode 403, forbidden', async () => {
         const result: any = await findTransaction()
-        await supertest(app).put(`/transaction/${result[0].uuid}`).send({ statusOrder: 'Done' })
+        await supertest(app).put(`/transaction/${result[0].uuid}`).send({ orderStatus: 'Done' })
       })
     })
 
     describe('if user is already logged in as cashier', () => {
-      it('Try request put, should return a statusCode 200, OK with sending statusOrder Prepare', async () => {
+      it('Try request put, should return a statusCode 200, OK with sending orderStatus Prepare', async () => {
         const { body } = await supertest(app).post('/auth/login').send(userCashier)
         const result: any = await findTransaction()
         const resultReq = await supertest(app)
           .put(`/transaction/${result[0].uuid}`)
-          .send({ statusOrder: 'Prepare' })
+          .send({ orderStatus: 'Prepare' })
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -375,12 +378,12 @@ describe('**************** Transaction ****************', () => {
     })
 
     describe('if user is already logged in as kitchen', () => {
-      it('Try request put, should return a statusCode 200, OK with sending statusOrder Done', async () => {
+      it('Try request put, should return a statusCode 200, OK with sending orderStatus Done', async () => {
         const { body } = await supertest(app).post('/auth/login').send(userKitchen)
         const result: any = await findTransaction()
         const resultReq = await supertest(app)
           .put(`/transaction/${result[0].uuid}`)
-          .send({ statusOrder: 'Done' })
+          .send({ orderStatus: 'Done' })
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)

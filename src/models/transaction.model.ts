@@ -12,9 +12,14 @@ const transactionSchema = new mongoose.Schema({
   },
   user: { type: Schema.Types.ObjectId, ref: 'userData' },
   customer: String,
-  orders: [{ type: Schema.Types.ObjectId, ref: 'menuData' }],
+  orders: [
+    {
+      _id: { type: Schema.Types.ObjectId, ref: 'menuData' },
+      qty: Number
+    }
+  ],
   bill: Number,
-  statusOrder: String,
+  orderStatus: String,
   createdAt: String,
   updatedAt: String
 })

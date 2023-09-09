@@ -6,7 +6,6 @@ export const createActivityValidation = (payload: ActivityType) => {
     uuid: Joi.string().required(),
     user: Joi.required(),
     title: Joi.string().required(),
-    description: Joi.string().allow('', null),
     createdAt: Joi.string().required(),
     updatedAt: Joi.string().required()
   })
@@ -17,7 +16,6 @@ export const createActivityValidation = (payload: ActivityType) => {
 export const updateActivityValidation = (payload: ActivityType) => {
   const schema = Joi.object({
     title: Joi.string().allow('', null),
-    description: Joi.string().allow('', null),
     updatedAt: Joi.string().required()
   })
 

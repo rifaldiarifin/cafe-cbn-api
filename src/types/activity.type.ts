@@ -3,7 +3,6 @@ export interface ActivityType {
   uuid: string
   user: string
   title: string
-  description: string
   createdAt: string
   updatedAt: string
 }

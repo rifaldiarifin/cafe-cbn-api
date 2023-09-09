@@ -4,7 +4,7 @@ export interface MenuType {
   menuCode: string
   name: string
   image: string
-  contents: string[]
+  contents: string
   price: number
   sold: number
   menuRatings: any
@@ -29,6 +29,8 @@ export interface MenuCategoryType {
   _id: string
   uuid: string
   menu: string
+  categoryImage: string
+  subCategoryImage: string
   category: string
   subCategory: string
   createdAt: string

@@ -40,12 +40,11 @@ const createUserPayload = (data: any) => {
 
 const { activityPayload1 } = {
   activityPayload1: {
-    title: 'Login',
-    description: 'Nothing to say'
+    title: 'Login'
   }
 }
 
-const { createPayloadUserRegular, userRegular } = {
+const { createPayloadUserAdmin, createPayloadUserRegular, userAdmin, userRegular } = {
   // User
 
   createPayloadUserRegular: {
@@ -60,13 +59,30 @@ const { createPayloadUserRegular, userRegular } = {
     },
     profileImage: 'helloworld.png'
   },
+  createPayloadUserAdmin: {
+    firstname: 'Admin',
+    lastname: 'istrator',
+    username: 'admin',
+    password: 'admin',
+    userAccess: { role: 'admin' },
+    userContact: {
+      email: 'admin3@gmail.com',
+      phone: '08123141412'
+    },
+    profileImage: 'helloworld.png'
+  },
   // login
   userRegular: {
     username: 'regular123',
     password: 'regular123'
+  },
+  userAdmin: {
+    username: 'admin',
+    password: 'admin'
   }
 }
 
+const admin: any = createUserPayload(createPayloadUserAdmin)
 const regular: any = createUserPayload(createPayloadUserRegular)
 
 describe('**************** Activity ****************', () => {
@@ -78,6 +94,11 @@ describe('**************** Activity ****************', () => {
     await createUser(regular)
     await createUserAccess(regular.userAccess)
     await createUserContact(regular.userContact)
+
+    // Admin
+    await createUser(admin)
+    await createUserAccess(admin.userAccess)
+    await createUserContact(admin.userContact)
   })
 
   afterAll(async () => {
@@ -115,9 +136,9 @@ describe('**************** Activity ****************', () => {
       })
     })
 
-    describe('if user is already logged in', () => {
+    describe('if user is already logged in as admin', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
         const resultReq = await supertest(app)
           .get('/activity')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
@@ -141,7 +162,6 @@ describe('**************** Activity ****************', () => {
         const resultReq = await supertest(app)
           .get('/activity/me')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
-        console.log(resultReq.body.result)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
         expect(resultReq.statusCode).toBe(200)
@@ -164,7 +184,6 @@ describe('**************** Activity ****************', () => {
         const resultReq = await supertest(app)
           .get(`/activity/${result[0].uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
-        console.log(resultReq.body.result)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
         expect(resultReq.statusCode).toBe(200)
@@ -181,9 +200,9 @@ describe('**************** Activity ****************', () => {
       })
     })
 
-    describe('if user is already logged in', () => {
+    describe('if user is already logged in as admin', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
         const result: any = await findActivityFromDB()
         const resultReq = await supertest(app)
           .delete(`/activity/${result[0].uuid}`)

@@ -10,7 +10,7 @@ export const createTransactionValidation = (payload: TransactionType) => {
     customer: Joi.string().required(),
     orders: Joi.array().required(),
     bill: Joi.number().required(),
-    statusOrder: Joi.string().required(),
+    orderStatus: Joi.string().required(),
     createdAt: Joi.string().required(),
     updatedAt: Joi.string().required()
   })
@@ -20,7 +20,7 @@ export const createTransactionValidation = (payload: TransactionType) => {
 
 export const updateTransactionValidation = (payload: TransactionType) => {
   const schema = Joi.object({
-    statusOrder: Joi.string().required(),
+    orderStatus: Joi.string().required(),
     updatedAt: Joi.string().allow('', null)
   })
 

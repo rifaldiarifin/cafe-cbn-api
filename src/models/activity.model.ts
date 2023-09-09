@@ -7,7 +7,6 @@ const activitySchema = new mongoose.Schema({
   },
   user: { type: Schema.Types.ObjectId, ref: 'userData' },
   title: String,
-  description: String,
   createdAt: String,
   updatedAt: String
 })

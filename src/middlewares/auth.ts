@@ -8,6 +8,13 @@ export const requireUser = (req: Request, res: Response, next: NextFunction) => 
   return next()
 }
 
+export const requireMachine = (req: Request, res: Response, next: NextFunction) => {
+  const user = res.locals.user
+  if (!user) return res.sendStatus(403)
+  if (user.role !== 'machine') return res.sendStatus(403)
+  return next()
+}
+
 export const requireKitchen = (req: Request, res: Response, next: NextFunction) => {
   const user = res.locals.user
   if (!user) return res.sendStatus(403)

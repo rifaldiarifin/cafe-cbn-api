@@ -4,9 +4,9 @@ export interface TransactionType {
   orderCode: string
   user: string
   customer: string
-  orders: object[]
+  orders: any[]
   bill: number
   createdAt: string
   updatedAt: string
-  statusOrder: string
+  orderStatus: string
 }

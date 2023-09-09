@@ -24,10 +24,12 @@ export const createNewTransaction = async (req: Request, res: Response) => {
     const catchPriceOfOrder: number[] = []
     for (let x = 0; x < req.body.orders.length; x++) {
       const order = req.body.orders[x]
-      const dataOrder: any = await findMenuOnlyByIDFromDB(order)
-      await updateSoldMenuFromDB(order, parseInt(dataOrder.sold) + 1)
-      catchIDOfOrder.push(dataOrder._id)
-      catchPriceOfOrder.push(dataOrder.price)
+      const dataOrder: any = await findMenuOnlyByIDFromDB(order.uuid)
+      await updateSoldMenuFromDB(order.uuid, parseInt(dataOrder.sold) + parseInt(order.qty))
+      for (let z = 0; z < order.qty; z++) {
+        catchPriceOfOrder.push(dataOrder.price)
+      }
+      catchIDOfOrder.push({ order: dataOrder._id, qty: order.qty })
     }
     const bill = catchPriceOfOrder.reduce((total, curr) => {
       return total + curr
@@ -45,7 +47,7 @@ export const createNewTransaction = async (req: Request, res: Response) => {
   req.body.user = _id
   req.body.orders = ordersid[0]
   req.body.bill = ordersid[1]
-  req.body.statusOrder = 'Pending'
+  req.body.orderStatus = 'Pending'
   req.body.createdAt = timestamps()
   req.body.updatedAt = timestamps()
 
@@ -57,9 +59,10 @@ export const createNewTransaction = async (req: Request, res: Response) => {
   }
 
   try {
+    // console.log(value)
     await createTransaction(value)
     logger.info('Success create transaction')
-    return responseHandler(['Created', 201, 'Success create transaction', []], res)
+    return responseHandler(['Created', 201, 'Success create transaction', value], res)
   } catch (error: any) {
     logger.error(`ERROR: Transaction - Create = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.message}`, []], res)
@@ -138,7 +141,7 @@ export const deleteTransaction = async (req: Request, res: Response) => {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
-    if (check.statusOrder !== 'Done') {
+    if (check.orderStatus !== 'Done') {
       logger.info('Transaction has not been completed, please try again later')
       return responseHandler([false, 422, 'Transaction has not been completed, please try again later', []], res)
     }

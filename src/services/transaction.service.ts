@@ -9,18 +9,18 @@ export const createTransaction = async (payload: TransactionType) => {
 // READ
 export const findTransaction = async () => {
   return await TransactionDocumentModel.find()
-    .populate('orders', 'uuid menuCode name image price')
-    .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
+    .populate('orders.order', 'uuid menuCode name image price')
+    .select('_id uuid orderCode customer bill orderStatus createdAt updatedAt')
 }
 export const findMyTransaction = async (user: string) => {
   return await TransactionDocumentModel.find({ user })
     .populate('orders', 'uuid menuCode name image price')
-    .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
+    .select('_id uuid orderCode customer bill orderStatus createdAt updatedAt')
 }
 export const findTransactionByID = async (uuid: string) => {
   return await TransactionDocumentModel.findOne({ uuid })
     .populate('orders', 'uuid menuCode name image price')
-    .select('_id uuid orderCode customer bill statusOrder createdAt updatedAt')
+    .select('_id uuid orderCode customer bill orderStatus createdAt updatedAt')
 }
 
 // UPDATE
