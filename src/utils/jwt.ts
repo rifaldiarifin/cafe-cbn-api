@@ -12,15 +12,17 @@ export const verifyJWT = (token: string) => {
   try {
     const decoded: any = jwt.verify(token, CONFIG.jwt_public)
     return {
-      valid: false,
+      valid: true,
       expired: false,
-      decoded
+      decoded,
+      message: 'Success'
     }
   } catch (error: any) {
     return {
       valid: false,
-      expired: error.message === 'jwt is expired or not eligible to use',
-      decoded: null
+      expired: error.message === 'jwt expired',
+      decoded: null,
+      message: error.message
     }
   }
 }
