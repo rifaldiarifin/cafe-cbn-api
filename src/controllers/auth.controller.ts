@@ -51,8 +51,7 @@ export const createSession = async (req: Request, res: Response) => {
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       sameSite: true,
-      // secure: true,
-      path: '/auth/refresh',
+      secure: true,
       maxAge: 60 * 60 * 24 * 30
     })
 

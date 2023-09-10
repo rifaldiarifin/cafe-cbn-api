@@ -7,6 +7,6 @@ const AuthRouter = express.Router()
 // http://localhost:4000/auth
 
 AuthRouter.post('/login', createSession)
-AuthRouter.post('/refresh', requireRefreshToken, refreshSession)
+AuthRouter.get('/refresh', requireRefreshToken, refreshSession)
 
 export default AuthRouter

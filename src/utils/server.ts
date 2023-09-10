@@ -1,10 +1,9 @@
-import express, { type Response, type Application, type NextFunction } from 'express'
+import express, { type Application } from 'express'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import deserializeToken from '../middlewares/deserializedToken'
 import cors from 'cors'
 import { routes } from '../routes/index.route'
-import allowOrigins from '../config/allowOrigins'
 
 const createServer = () => {
   const app: Application = express()
@@ -19,15 +18,11 @@ const createServer = () => {
   // CORS Handler
   app.use(
     cors({
-      origin: allowOrigins
+      origin: ['http://localhost:5173'],
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE']
     })
   )
-  app.use((_, res: Response, next: NextFunction) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', '*')
-    res.setHeader('Access-Control-Allow-Headers', '*')
-    next()
-  })
 
   app.use(deserializeToken)
 
