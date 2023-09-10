@@ -1,3 +1,3 @@
-const allowOrigins: string[] = ['*']
+const allowOrigins: string = '*'
 
 export default allowOrigins
