@@ -1,7 +1,7 @@
 import { type Request, type Response } from 'express'
 import { logger } from '../utils/logger'
 import responseHandler from '../utils/responsehandle'
-import { createSessionValidation } from '../validations/auth.validation'
+import { createSessionValidation, tokenValidation } from '../validations/auth.validation'
 import { findUserByUsername } from '../services/auth.service'
 import { checkPassword } from '../utils/hashing'
 import { signJWT, verifyJWT } from '../utils/jwt'
@@ -88,6 +88,44 @@ export const refreshSession = async (req: Request, res: Response) => {
     return responseHandler(['OK', 200, 'Refresh Session Success', { accessToken }], res)
   } catch (error: any) {
     logger.error(`ERROR: Auth - Refresh Session = ${error.message}`)
+    return responseHandler([false, 422, error.message, []], res)
+  }
+}
+
+export const verifyToken = (req: Request, res: Response) => {
+  const { error, value } = tokenValidation(req.body)
+  if (error) {
+    logger.error(`ERROR: Auth - Verify Token = ${error.details[0].message}`)
+    return responseHandler([false, 401, `Verify Token Failed, Message: ${error.details[0].message}`, []], res)
+  }
+
+  try {
+    const { valid, expired, message }: JwtType = verifyJWT(value.token)
+
+    if (!valid) {
+      logger.error(`ERROR: Auth - Verify Token = ${message}`)
+      return responseHandler([false, 401, `Verify Token Failed, Message: ${message}`, { valid, expired }], res)
+    }
+    logger.info('Verify Token Success')
+    return responseHandler(['OK', 200, 'Verify Token Success', { valid, expired }], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Auth - Verify Token = ${error.message}`)
+    return responseHandler([false, 422, error.message, []], res)
+  }
+}
+
+export const clearSession = (req: Request, res: Response) => {
+  try {
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      sameSite: true,
+      secure: true
+    })
+
+    logger.info('Clear Session Success')
+    return responseHandler([false, 422, 'Clear Session Success', []], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Auth - Clear Session = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
   }
 }

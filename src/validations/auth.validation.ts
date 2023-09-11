@@ -98,3 +98,11 @@ export const refreshSessionValidation = (payload: string) => {
 
   return schema.validate(payload)
 }
+
+export const tokenValidation = (payload: string) => {
+  const schema = Joi.object({
+    token: Joi.required()
+  })
+
+  return schema.validate(payload)
+}

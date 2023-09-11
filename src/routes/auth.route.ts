@@ -1,5 +1,5 @@
 import express from 'express'
-import { createSession, refreshSession } from '../controllers/auth.controller'
+import { clearSession, createSession, refreshSession, verifyToken } from '../controllers/auth.controller'
 import { requireRefreshToken } from '../middlewares/auth'
 
 const AuthRouter = express.Router()
@@ -8,5 +8,7 @@ const AuthRouter = express.Router()
 
 AuthRouter.post('/login', createSession)
 AuthRouter.get('/refresh', requireRefreshToken, refreshSession)
+AuthRouter.post('/verify', verifyToken)
+AuthRouter.get('/logout', clearSession)
 
 export default AuthRouter
