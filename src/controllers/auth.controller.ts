@@ -123,7 +123,7 @@ export const clearSession = (req: Request, res: Response) => {
     })
 
     logger.info('Clear Session Success')
-    return responseHandler([false, 422, 'Clear Session Success', []], res)
+    return responseHandler(['OK', 200, 'Clear Session Success', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Auth - Clear Session = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
