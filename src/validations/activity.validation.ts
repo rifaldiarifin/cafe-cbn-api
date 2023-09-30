@@ -4,8 +4,11 @@ import { type ActivityType } from '../types/activity.type'
 export const createActivityValidation = (payload: ActivityType) => {
   const schema = Joi.object({
     uuid: Joi.string().required(),
-    user: Joi.required(),
-    title: Joi.string().required(),
+    user: Joi.object({
+      data: Joi.required(),
+      fullname: Joi.string().required()
+    }),
+    activity: Joi.string().required(),
     createdAt: Joi.string().required(),
     updatedAt: Joi.string().required()
   })
@@ -15,7 +18,7 @@ export const createActivityValidation = (payload: ActivityType) => {
 
 export const updateActivityValidation = (payload: ActivityType) => {
   const schema = Joi.object({
-    title: Joi.string().allow('', null),
+    activity: Joi.string().allow('', null),
     updatedAt: Joi.string().required()
   })
 

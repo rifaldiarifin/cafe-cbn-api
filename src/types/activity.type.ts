@@ -1,8 +1,12 @@
+import { type Types } from 'mongoose'
 export interface ActivityType {
-  _id: string
+  _id: Types.ObjectId
   uuid: string
-  user: string
-  title: string
+  user: {
+    data: Types.ObjectId
+    fullname: string
+  }
+  activity: string
   createdAt: string
   updatedAt: string
 }

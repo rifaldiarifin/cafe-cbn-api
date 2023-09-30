@@ -7,7 +7,7 @@ import { createUser, createUserAccess, createUserContact } from '../services/use
 import { timestamps } from '../utils/date'
 import { hashing } from '../utils/hashing'
 import menuCode from '../utils/menuCodeGenerate'
-import { createMenu, createMenuType } from '../services/menu.service'
+import { createMenu } from '../services/menu.service'
 import { findTransaction } from '../services/transaction.service'
 
 const app = createServer()
@@ -134,38 +134,22 @@ const {
 const { menuPayload1, menuPayload2 } = {
   menuPayload1: {
     name: 'Americano',
-    price: 15000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'Coffee'
-    }
+    price: 15000
   },
   menuPayload2: {
     name: 'Espresso',
-    price: 12000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'Coffee'
-    }
+    price: 12000
   }
 }
 
 const createMenuPayload = (data: any) => {
   const menuid = new mongoose.Types.ObjectId()
-  const typeid = new mongoose.Types.ObjectId()
 
   data._id = menuid
   data.uuid = uuidv4()
   data.menuCode = menuCode()
-  data.menuType = typeid
   data.createdAt = timestamps()
   data.updatedAt = timestamps()
-
-  data.type._id = typeid
-  data.type.uuid = uuidv4()
-  data.type.menu = menuid
-  data.type.createdAt = timestamps()
-  data.type.updatedAt = timestamps()
 
   return data
 }
@@ -182,6 +166,7 @@ const menu2: any = createMenuPayload(menuPayload2)
 const { transaction1 } = {
   transaction1: {
     customer: 'Hello World',
+    payment: 'DEBIT_CARD',
     orders: [
       { uuid: `${menu1.uuid}`, qty: 2 },
       { uuid: `${menu2.uuid}`, qty: 1 }
@@ -227,9 +212,7 @@ describe('**************** Transaction ****************', () => {
 
   it('Prepare data menu', async () => {
     await createMenu(menu1)
-    await createMenuType(menu1.type)
     await createMenu(menu2)
-    await createMenuType(menu2.type)
   })
 
   // CREATE

@@ -40,7 +40,7 @@ const createUserPayload = (data: any) => {
 
 const { activityPayload1 } = {
   activityPayload1: {
-    title: 'Login'
+    activity: 'Login'
   }
 }
 

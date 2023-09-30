@@ -14,11 +14,16 @@ const transactionSchema = new mongoose.Schema({
   customer: String,
   orders: [
     {
-      _id: { type: Schema.Types.ObjectId, ref: 'menuData' },
+      order: { type: Schema.Types.ObjectId, ref: 'menuData' },
       qty: Number
     }
   ],
   bill: Number,
+  payment: String,
+  handleCooking: {
+    type: String,
+    default: 'nothing'
+  },
   orderStatus: String,
   createdAt: String,
   updatedAt: String

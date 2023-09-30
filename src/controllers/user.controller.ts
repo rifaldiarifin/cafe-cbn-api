@@ -13,6 +13,7 @@ import {
   updateAccessUserByID,
   updateContactUserByID
 } from '../services/user.service'
+import { findUserByUsername } from '../services/auth.service'
 import responseHandler from '../utils/responsehandle'
 import { timestamps } from '../utils/date'
 import {
@@ -24,12 +25,21 @@ import {
   updateUserValidation
 } from '../validations/auth.validation'
 import { hashing } from '../utils/hashing'
+import { getConflict } from '../utils/mongoConfictString'
 
 /* ###################### CREATE ########################### */
 export const addUser = async (req: Request, res: Response) => {
   const userid = new mongoose.Types.ObjectId()
   const accessid = new mongoose.Types.ObjectId()
   const contactid = new mongoose.Types.ObjectId()
+
+  if (!req.body.userContact) {
+    req.body.userContact = {}
+  }
+
+  if (!req.body.userAccess) {
+    req.body.userAccess = {}
+  }
 
   req.body._id = userid
   req.body.uuid = uuidv4()
@@ -76,12 +86,22 @@ export const addUser = async (req: Request, res: Response) => {
   // Success validate
   try {
     userValidate.value.password = `${hashing(userValidate.value.password)}`
+    const checkUsername = await findUserByUsername(userValidate.value.username)
+    if (checkUsername) {
+      logger.error('ERROR: Users - Create = Conflict')
+      return responseHandler([false, 409, `Username "${userValidate.value.username}", is already in use`, []], res)
+    }
     await createUser(userValidate.value)
     await createUserAccess(userValidate.value.userAccess)
     await createUserContact(userValidate.value.userContact)
     logger.info('Success add user!')
     responseHandler(['Created', 201, 'Success add user!', []], res)
   } catch (error: any) {
+    if (error?.code === 11000) {
+      logger.error(`ERROR: Users - Create = ${error.message}`)
+      return responseHandler([false, 409, `${getConflict(error.keyValue)}, is already in use`, []], res)
+    }
+    // console.log({...error})
     logger.error(`ERROR: Users - Create = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
   }

@@ -1,5 +1,6 @@
+import { type Types } from 'mongoose'
 export interface MenuType {
-  _id: string
+  _id: Types.ObjectId
   uuid: string
   menuCode: string
   name: string
@@ -9,13 +10,12 @@ export interface MenuType {
   sold: number
   menuRatings: any
   ratings: object
-  type: object
   createdAt: string
   updatedAt: string
 }
 
 export interface MenuRatingsType {
-  _id: string
+  _id: Types.ObjectId
   uuid: string
   menu: string
   user: string
@@ -25,14 +25,17 @@ export interface MenuRatingsType {
   updatedAt: string
 }
 
-export interface MenuCategoryType {
-  _id: string
+export interface MenuGroupType {
+  _id: Types.ObjectId
   uuid: string
-  menu: string
-  categoryImage: string
-  subCategoryImage: string
-  category: string
-  subCategory: string
+  groupName: string
+  image: string
+  menus: string[]
+  showOn: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface MenusValueGroup {
+  menus: string[]
 }

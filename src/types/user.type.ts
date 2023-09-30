@@ -1,5 +1,7 @@
+import { type Types } from 'mongoose'
+
 export interface UserType {
-  _id: string
+  _id: Types.ObjectId
   uuid: string
   firstname: string
   lastname: string
@@ -13,7 +15,7 @@ export interface UserType {
 }
 
 export interface UserAccessType {
-  _id: string
+  _id: Types.ObjectId
   uuid: string
   user: string
   role: string
@@ -22,7 +24,7 @@ export interface UserAccessType {
 }
 
 export interface UserContactType {
-  _id: string
+  _id: Types.ObjectId
   uuid: string
   user: string
   email: string

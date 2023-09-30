@@ -15,7 +15,7 @@ const userDocumentSchema = new mongoose.Schema({
   password: String,
   profileImage: {
     type: String,
-    default: 'noavatar.jpg'
+    default: 'noavatar'
   },
   access: { type: Schema.Types.ObjectId, ref: 'userAccess' },
   contact: { type: Schema.Types.ObjectId, ref: 'userContact' },
@@ -53,11 +53,11 @@ const contactDocumentSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    default: '-'
+    default: ''
   },
   phone: {
     type: String,
-    default: '-'
+    default: ''
   },
   createdAt: String,
   updatedAt: String

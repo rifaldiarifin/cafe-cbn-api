@@ -83,7 +83,7 @@ const { createPayloadUserAdmin, createPayloadUserManager, createPayloadUserRegul
   // Update
   updateUserManager: {
     firstname: 'hahahha',
-    contact: {
+    userContact: {
       phone: '08987123217'
     }
   }

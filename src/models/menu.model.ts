@@ -10,13 +10,10 @@ const menuSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  name: {
-    type: String,
-    unique: true
-  },
+  name: String,
   image: {
     type: String,
-    default: 'nofoodphoto.jpg'
+    default: 'nofoodphoto'
   },
   contents: {
     type: String,
@@ -29,8 +26,7 @@ const menuSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  menuRatings: [{ type: Schema.Types.ObjectId, ref: 'menuRatings', default: {} }],
-  menuType: { type: Schema.Types.ObjectId, ref: 'menuType' },
+  menuRatings: [{ type: Schema.Types.ObjectId, ref: 'menuRatings' }],
   createdAt: String,
   updatedAt: String
 })
@@ -55,21 +51,34 @@ const menuRatingsSchema = new mongoose.Schema({
   updatedAt: String
 })
 
-const menuTypeSchema = new mongoose.Schema({
+const menuGroupSchema = new mongoose.Schema({
   _id: Schema.Types.ObjectId,
   uuid: {
     type: String,
     unique: true
   },
-  menu: { type: Schema.Types.ObjectId, ref: 'menuData' },
-  categoryImage: String,
-  subCategoryImage: String,
-  category: String,
-  subCategory: String,
+  groupName: {
+    type: String,
+    unique: true
+  },
+  image: {
+    type: String,
+    default: 'nofoodphoto'
+  },
+  menus: [
+    {
+      menu: { type: Schema.Types.ObjectId, ref: 'menuData' },
+      uuid: String
+    }
+  ],
+  showOn: {
+    type: Boolean,
+    default: false
+  },
   createdAt: String,
   updatedAt: String
 })
 
 export const RatingsDocumentModel = mongoose.model('menuRatings', menuRatingsSchema, 'menuRatings')
-export const CategoryTypeDocumentModel = mongoose.model('menuType', menuTypeSchema, 'menuType')
+export const GroupDocumentModel = mongoose.model('menuType', menuGroupSchema, 'menuGroups')
 export const MenuDocumentModel = mongoose.model('menuData', menuSchema, 'menuData')

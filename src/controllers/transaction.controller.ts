@@ -10,8 +10,10 @@ import {
   createTransaction,
   deleteTransactionByID,
   findMyTransaction,
+  findStatusTransactionByID,
   findTransaction,
   findTransactionByID,
+  findTransactionToday,
   updateTransactionByID
 } from '../services/transaction.service'
 import { findMenuOnlyByIDFromDB, updateSoldMenuFromDB } from '../services/menu.service'
@@ -47,7 +49,7 @@ export const createNewTransaction = async (req: Request, res: Response) => {
   req.body.user = _id
   req.body.orders = ordersid[0]
   req.body.bill = ordersid[1]
-  req.body.orderStatus = 'Pending'
+  req.body.orderStatus = 'pending'
   req.body.createdAt = timestamps()
   req.body.updatedAt = timestamps()
 
@@ -57,12 +59,23 @@ export const createNewTransaction = async (req: Request, res: Response) => {
     logger.error(`ERROR: Transaction - Create = ${error.details[0].message}`)
     return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.details[0].message}`, []], res)
   }
+  // check payment mode
+  const paymentString: string[] = ['DEBIT_CARD', 'E-WALLET']
+  value.payment = value.payment.toString().replaceAll(' ', '_').toUpperCase()
+  const payloadPayment: string | undefined = paymentString.find((payment) => payment === value.payment)
+
+  if (!payloadPayment) {
+    logger.error('ERROR: Transaction - Create = Payload payment not match from all types!')
+    return responseHandler(
+      [false, 422, 'ERROR: Transaction - Create = Payload payment not match from all types!', []],
+      res
+    )
+  }
 
   try {
-    // console.log(value)
     await createTransaction(value)
     logger.info('Success create transaction')
-    return responseHandler(['Created', 201, 'Success create transaction', value], res)
+    return responseHandler(['Created', 201, 'Success create transaction', []], res)
   } catch (error: any) {
     logger.error(`ERROR: Transaction - Create = ${error.message}`)
     return responseHandler([false, 422, `ERROR: Transaction - Create = ${error.message}`, []], res)
@@ -78,6 +91,17 @@ export const getTransaction = async (req: Request, res: Response) => {
   } catch (error: any) {
     logger.error(`ERROR: Transaction - Get All = ${error.message}`)
     responseHandler([false, 422, `ERROR: Transaction - Get All = ${error.message}`, []], res)
+  }
+}
+
+export const getTransactionToday = async (req: Request, res: Response) => {
+  try {
+    const result: any = await findTransactionToday()
+    logger.info('Success get all transaction today')
+    responseHandler(['OK', 200, 'Success get all transaction today', result], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Transaction - Get All Today = ${error.message}`)
+    responseHandler([false, 422, `ERROR: Transaction - Get All Today = ${error.message}`, []], res)
   }
 }
 
@@ -121,8 +145,18 @@ export const updateTransaction = async (req: Request, res: Response) => {
     logger.error(`ERROR: Transaction - Update = ${error.details[0].message}`)
     return responseHandler([false, 422, `ERROR: Transaction - Update = ${error.details[0].message}`, []], res)
   }
-
   try {
+    const checkHandleCooking: any = await findStatusTransactionByID(id)
+    if (!checkHandleCooking) {
+      logger.error('ERROR: Transaction - Update = Data not found')
+      return responseHandler([false, 422, 'Data not found', []], res)
+    } else if (
+      checkHandleCooking.handleCooking !== 'nothing' &&
+      checkHandleCooking.handleCooking !== res.locals.user.username
+    ) {
+      logger.error('ERROR: Transaction - Update = Failed to handle the order')
+      return responseHandler([false, 422, 'Failed to handle the order', []], res)
+    }
     await updateTransactionByID(id, value)
     logger.info('Success update transaction')
     return responseHandler(['OK', 200, 'Success update transaction', []], res)
@@ -132,6 +166,7 @@ export const updateTransaction = async (req: Request, res: Response) => {
   }
 }
 
+// DELETE
 export const deleteTransaction = async (req: Request, res: Response) => {
   const id: string = req.params.id
 

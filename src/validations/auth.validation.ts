@@ -55,8 +55,8 @@ export const updateUserValidation = (payload: UserType) => {
     username: Joi.string().allow('', null),
     password: Joi.string().allow('', null),
     profileImage: Joi.string().allow('', null),
-    access: Joi.object().allow('', null),
-    contact: Joi.object().allow('', null),
+    userAccess: Joi.object().allow('', null),
+    userContact: Joi.object().allow('', null),
     updatedAt: Joi.string().allow('', null)
   })
 

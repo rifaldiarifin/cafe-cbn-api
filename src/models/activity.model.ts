@@ -5,8 +5,11 @@ const activitySchema = new mongoose.Schema({
     type: String,
     unique: true
   },
-  user: { type: Schema.Types.ObjectId, ref: 'userData' },
-  title: String,
+  user: {
+    data: { type: Schema.Types.ObjectId, ref: 'userData' },
+    fullname: String
+  },
+  activity: String,
   createdAt: String,
   updatedAt: String
 })

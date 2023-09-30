@@ -7,7 +7,7 @@ import createServer from '../utils/server'
 import { createUser, createUserAccess, createUserContact } from '../services/user.service'
 import { hashing } from '../utils/hashing'
 import menuCode from '../utils/menuCodeGenerate'
-import { createMenu, createMenuType } from '../services/menu.service'
+import { createMenu } from '../services/menu.service'
 
 const app = createServer()
 
@@ -41,20 +41,12 @@ const createUserPayload = (data: any) => {
 
 const createMenuPayload = (data: any) => {
   const menuid = new mongoose.Types.ObjectId()
-  const typeid = new mongoose.Types.ObjectId()
 
   data._id = menuid
   data.uuid = uuidv4()
   data.menuCode = menuCode()
-  data.menuType = typeid
   data.createdAt = timestamps()
   data.updatedAt = timestamps()
-
-  data.type._id = typeid
-  data.type.uuid = uuidv4()
-  data.type.menu = menuid
-  data.type.createdAt = timestamps()
-  data.type.updatedAt = timestamps()
 
   return data
 }
@@ -140,59 +132,31 @@ const {
 const { menuPayload1, menuPayload2, menuPayload3, menuPayload4, menuPayload5, menuPayload6, updateMenuPayload } = {
   menuPayload1: {
     name: 'Americano',
-    price: 15000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'Coffee'
-    }
+    price: 15000
   },
   menuPayload2: {
     name: 'Espresso',
-    price: 12000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'Coffee'
-    }
+    price: 12000
   },
   menuPayload3: {
     name: 'Caramel Latte',
-    price: 23000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'Coffee'
-    }
+    price: 23000
   },
   menuPayload4: {
     name: 'Cappuchino',
-    price: 18000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'Coffee'
-    }
+    price: 18000
   },
   menuPayload5: {
     name: 'Mocha',
-    price: 20000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'NonCoffee'
-    }
+    price: 20000
   },
   menuPayload6: {
     name: 'Black Charcoal',
-    price: 26000,
-    type: {
-      category: 'Drinks',
-      subCategory: 'NonCoffee'
-    }
+    price: 26000
   },
   updateMenuPayload: {
     name: 'Black Forest',
-    price: 42000,
-    type: {
-      category: 'Deserts',
-      subCategory: 'Cake'
-    }
+    price: 42000
   }
 }
 
@@ -255,9 +219,7 @@ describe('**************** Menu ****************', () => {
   // Prepare
   it('prepare data', async () => {
     await createMenu(newMenu)
-    await createMenuType(newMenu.type)
     await createMenu(newMenu2)
-    await createMenuType(newMenu2.type)
   })
 
   // CREATE

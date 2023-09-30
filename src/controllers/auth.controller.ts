@@ -13,13 +13,14 @@ interface JwtType {
 }
 
 const structureUser = (data: any) => {
-  const { uuid, firstname, lastname, username, access } = data
+  const { uuid, firstname, lastname, username, profileImage, access } = data
   return {
     uuid,
     firstname,
     lastname,
     fullname: `${firstname} ${lastname}`,
     username,
+    profileImage,
     role: access.role
   }
 }
@@ -46,7 +47,7 @@ export const createSession = async (req: Request, res: Response) => {
 
     const dataUser = structureUser(user)
 
-    const accessToken = signJWT({ ...dataUser }, { expiresIn: '15m' })
+    const accessToken = signJWT({ ...dataUser }, { expiresIn: '1d' })
     const refreshToken = signJWT({ ...dataUser }, { expiresIn: '30d' })
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
@@ -82,7 +83,7 @@ export const refreshSession = async (req: Request, res: Response) => {
       return responseHandler([false, 401, 'Refresh Session Failed, Message: Invalid Token', {}], res)
     }
 
-    const accessToken = signJWT({ ...structureUser(user) }, { expiresIn: '15m' })
+    const accessToken = signJWT({ ...structureUser(user) }, { expiresIn: '1d' })
 
     logger.info('Refresh Session Success')
     return responseHandler(['OK', 200, 'Refresh Session Success', { accessToken }], res)

@@ -77,3 +77,12 @@ export const requireManagerOrAdmin = (req: Request, res: Response, next: NextFun
   }
   return next()
 }
+
+export const requireKitchenOrCashierOrManagerOrAdmin = (req: Request, res: Response, next: NextFunction) => {
+  const user = res.locals.user
+  if (!user) return responseHandler([false, 403, 'Invalid Token', []], res)
+  if (user.role !== 'admin' && user.role !== 'manager' && user.role !== 'cashier' && user.role !== 'kitchen') {
+    return responseHandler([false, 403, 'Invalid Token', []], res)
+  }
+  return next()
+}
