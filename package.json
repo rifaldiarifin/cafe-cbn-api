@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Cafe CBN API",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rifaldiarifin/cafe-cbn-api.git"
+  },
   "scripts": {
     "start": "npx tsc -w",
     "dev": "npx nodemon",
@@ -58,6 +62,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.1",
     "moment": "^2.29.4",
