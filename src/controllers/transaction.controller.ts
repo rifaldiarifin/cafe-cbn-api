@@ -13,6 +13,7 @@ import {
   findStatusTransactionByID,
   findTransaction,
   findTransactionByID,
+  findCompleteTransactionThisMonth,
   findTransactionToday,
   updateTransactionByID
 } from '../services/transaction.service'
@@ -105,6 +106,17 @@ export const getTransactionToday = async (req: Request, res: Response) => {
   }
 }
 
+export const getTransactionThisMonth = async (req: Request, res: Response) => {
+  try {
+    const result: any = await findCompleteTransactionThisMonth()
+    logger.info('Success get all transaction this month')
+    responseHandler(['OK', 200, 'Success get all transaction this month', result], res)
+  } catch (error: any) {
+    logger.error(`ERROR: Transaction - Get All this month = ${error.message}`)
+    responseHandler([false, 422, `ERROR: Transaction - Get All this month = ${error.message}`, []], res)
+  }
+}
+
 export const getTransactionByID = async (req: Request, res: Response) => {
   const id: string = req.params.id
 
@@ -171,15 +183,16 @@ export const deleteTransaction = async (req: Request, res: Response) => {
   const id: string = req.params.id
 
   try {
-    const check: any = await deleteTransactionByID(id)
+    const check: any = await findTransactionByID(id)
     if (!check) {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
-    if (check.orderStatus !== 'Done') {
+    if (check.orderStatus !== 'complete') {
       logger.info('Transaction has not been completed, please try again later')
       return responseHandler([false, 422, 'Transaction has not been completed, please try again later', []], res)
     }
+    await deleteTransactionByID(id)
     logger.info('Success delete transaction')
     return responseHandler(['OK', 200, 'Success delete transaction', []], res)
   } catch (error: any) {

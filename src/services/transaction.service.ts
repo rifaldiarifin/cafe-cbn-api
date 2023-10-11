@@ -1,4 +1,4 @@
-import { dateNow } from '../utils/date'
+import { dateMonthAndYearNow, dateNow } from '../utils/date'
 import { TransactionDocumentModel } from '../models/transaction.model'
 import { type TransactionType } from '../types/transaction.type'
 
@@ -15,6 +15,14 @@ export const findTransaction = async () => {
 }
 export const findTransactionToday = async () => {
   return await TransactionDocumentModel.find({ createdAt: { $regex: '.*' + dateNow() + '.*' } })
+    .populate('orders.order', 'uuid menuCode name image price')
+    .select('_id uuid orderCode customer bill orders.qty payment orderStatus handleCooking createdAt updatedAt')
+}
+export const findCompleteTransactionThisMonth = async () => {
+  return await TransactionDocumentModel.find({
+    createdAt: { $regex: '.*' + dateMonthAndYearNow() + '.*' },
+    orderStatus: 'complete'
+  })
     .populate('orders.order', 'uuid menuCode name image price')
     .select('_id uuid orderCode customer bill orders.qty payment orderStatus handleCooking createdAt updatedAt')
 }
@@ -39,5 +47,5 @@ export const updateTransactionByID = async (uuid: string, payload: TransactionTy
 
 // DELETE
 export const deleteTransactionByID = async (uuid: string) => {
-  return await TransactionDocumentModel.findOneAndDelete({ uuid }).select('-_id uuid orderCode')
+  return await TransactionDocumentModel.deleteOne({ uuid }).select('-_id uuid orderCode')
 }

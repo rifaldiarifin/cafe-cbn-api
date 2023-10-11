@@ -6,6 +6,13 @@ export const dateNow = () => {
   return `${date}-${month}-${newDate.getFullYear()}`
 }
 
+export const dateMonthAndYearNow = () => {
+  const newDate: Date = new Date()
+  const month = (newDate.getMonth() + 1).toString().padStart(2, '0')
+
+  return `${month}-${newDate.getFullYear()}`
+}
+
 export const timeNow = () => {
   const newDate: Date = new Date()
   const hours = newDate.getHours().toString().padStart(2, '0')

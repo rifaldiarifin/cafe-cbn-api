@@ -18,7 +18,12 @@ const createServer = () => {
   // CORS Handler
   app.use(
     cors({
-      origin: ['http://localhost:3000'],
+      origin: [
+        'http://localhost:3000',
+        'https://cafecbn.netlify.app',
+        'http://192.168.43.102:3000',
+        'http://223.255.227.12:3000'
+      ],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE']
     })
