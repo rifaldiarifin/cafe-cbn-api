@@ -208,11 +208,23 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   const id: string = req.params.id
   try {
-    const check: any = await deleteUserByID(id)
+    const check: any = await findUserByID(id)
     if (!check) {
       logger.info('Data not found')
       return responseHandler([false, 404, 'Data not found', []], res)
     }
+    // CURRENT LOGGED IN ACCOUNT
+    if (res.locals.user.username === check.username) {
+      logger.info('ERROR: Users - Delete = You are currently signed in with this account')
+      return responseHandler([false, 404, 'You are currently signed in with this account', []], res)
+    }
+    // DEV ACCOUNT
+    if (check.access.role === 'dev') {
+      logger.info('ERROR: Users - Delete = Not allowed to delete role dev account')
+      return responseHandler([false, 404, 'Not allowed to delete role dev account', []], res)
+    }
+    // -----------
+    await deleteUserByID(id)
     logger.info('Success delete user')
     return responseHandler(['OK', 200, 'Success delete user', []], res)
   } catch (error: any) {
