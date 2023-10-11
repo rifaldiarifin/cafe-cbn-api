@@ -4,7 +4,7 @@ import { requireAdmin } from '../middlewares/auth'
 
 const PersonalRouter = express.Router()
 
-// http://localhost:4000/user
+// http://localhost:4000/api/user
 
 PersonalRouter.get('/', requireAdmin, getUser)
 PersonalRouter.get('/:id', requireAdmin, getUserByID)

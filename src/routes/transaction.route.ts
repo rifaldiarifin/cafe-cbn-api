@@ -13,16 +13,18 @@ import {
   getMyTransaction,
   getTransaction,
   getTransactionByID,
+  getTransactionThisMonth,
   getTransactionToday,
   updateTransaction
 } from '../controllers/transaction.controller'
 
 const TransactionRouter = express.Router()
 
-// http://localhost:4000/transaction
+// http://localhost:4000/api/transaction
 
 TransactionRouter.get('/', requireKitchenOrCashierOrManagerOrAdmin, getTransaction)
 TransactionRouter.get('/today', requireKitchenOrCashierOrManagerOrAdmin, getTransactionToday)
+TransactionRouter.get('/month', requireKitchenOrCashierOrManagerOrAdmin, getTransactionThisMonth)
 TransactionRouter.get('/me', requireRegularOrMachine, getMyTransaction)
 TransactionRouter.get('/:id', requireUser, getTransactionByID)
 TransactionRouter.post('/', requireMachine, createNewTransaction)

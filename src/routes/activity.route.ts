@@ -11,7 +11,7 @@ import { requireAdmin, requireUser } from '../middlewares/auth'
 
 const ActivityRouter = express.Router()
 
-// http://localhost:4000/activity
+// http://localhost:4000/api/activity
 
 ActivityRouter.get('/', requireAdmin, getActivity)
 ActivityRouter.get('/me', requireUser, getMyActivity)

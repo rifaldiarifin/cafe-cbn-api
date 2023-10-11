@@ -4,7 +4,7 @@ import { requireRefreshToken } from '../middlewares/auth'
 
 const AuthRouter = express.Router()
 
-// http://localhost:4000/auth
+// http://localhost:4000/api/auth
 
 AuthRouter.post('/login', createSession)
 AuthRouter.get('/refresh', requireRefreshToken, refreshSession)

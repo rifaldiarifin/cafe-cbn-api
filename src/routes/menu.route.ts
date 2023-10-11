@@ -22,7 +22,7 @@ import { requireManagerOrAdmin, requireUser } from '../middlewares/auth'
 
 const MenuRouter = express.Router()
 
-// http://localhost:4000/menu
+// http://localhost:4000/api/menu
 
 MenuRouter.get('/', requireUser, getMenu)
 MenuRouter.get('/groups', requireUser, getMenuGroups)
