@@ -226,21 +226,21 @@ describe('**************** Menu ****************', () => {
   describe('################ Create Menu ################', () => {
     describe('if user is not logged in', () => {
       it('Try request post, should return a status code 403, forbidden', async () => {
-        await supertest(app).post('/menu').send(createMenuPayload(menuPayload1)).expect(403)
+        await supertest(app).post('/api/menu').send(createMenuPayload(menuPayload1)).expect(403)
       })
     })
 
     describe('if user is already logged in by Admin', () => {
       it('Try request post, should return a status code 201, by sending new menu data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const resultReq1 = await supertest(app)
-          .post('/menu')
+          .post('/api/menu')
           .send(menuPayload1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq1.body.statusCode).toBe(201)
         expect(resultReq1.statusCode).toBe(201)
         await supertest(app)
-          .post('/menu')
+          .post('/api/menu')
           .send(menuPayload2)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(201)
@@ -248,15 +248,15 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Manager', () => {
       it('Try request post, should return a status code 201, by sending new menu data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const resultReq1 = await supertest(app)
-          .post('/menu')
+          .post('/api/menu')
           .send(menuPayload3)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq1.body.statusCode).toBe(201)
         expect(resultReq1.statusCode).toBe(201)
         await supertest(app)
-          .post('/menu')
+          .post('/api/menu')
           .send(menuPayload4)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(201)
@@ -264,9 +264,9 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Machine', () => {
       it('Try request post, should return a status code 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         await supertest(app)
-          .post('/menu')
+          .post('/api/menu')
           .send(menuPayload5)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
@@ -274,9 +274,9 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Regular', () => {
       it('Try request post, should return a status code 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         await supertest(app)
-          .post('/menu')
+          .post('/api/menu')
           .send(menuPayload5)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
@@ -287,15 +287,15 @@ describe('**************** Menu ****************', () => {
   describe('################ Rate the Menu ################', () => {
     describe('if user is not logged in', () => {
       it('Try request post, should return a status code 403, forbidden', async () => {
-        await supertest(app).post('/menu/rate').send(ratePayload1).expect(403)
+        await supertest(app).post('/api/menu/rate').send(ratePayload1).expect(403)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request post, should return a status code 201', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const resultReq1 = await supertest(app)
-          .post('/menu/rate')
+          .post('/api/menu/rate')
           .send(ratePayload1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(201)
@@ -309,38 +309,46 @@ describe('**************** Menu ****************', () => {
   describe('################ Get All Menu ################', () => {
     describe('if user is not logged in', () => {
       it('Try request get, should return a status code 403, forbidden', async () => {
-        await supertest(app).get('/menu').expect(403)
+        await supertest(app).get('/api/menu').expect(403)
       })
     })
 
     describe('if user is already logged in by Admin', () => {
       it('Try request get, should return a status code 200, with data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
-        const resultReq = await supertest(app).get('/menu').set('Authorization', `Bearer ${body.result.accessToken}`)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
+        const resultReq = await supertest(app)
+          .get('/api/menu')
+          .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.length > 0).toBe(true)
       })
     })
     describe('if user is already logged in by Manager', () => {
       it('Try request get, should return a status code 200, with data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
-        const resultReq = await supertest(app).get('/menu').set('Authorization', `Bearer ${body.result.accessToken}`)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
+        const resultReq = await supertest(app)
+          .get('/api/menu')
+          .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.length > 0).toBe(true)
       })
     })
     describe('if user is already logged in by Machine', () => {
       it('Try request get, should return a status code 200, with data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
-        const resultReq = await supertest(app).get('/menu').set('Authorization', `Bearer ${body.result.accessToken}`)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
+        const resultReq = await supertest(app)
+          .get('/api/menu')
+          .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.length > 0).toBe(true)
       })
     })
     describe('if user is already logged in by Regular', () => {
       it('Try request get, should return a status code 200, with data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
-        const resultReq = await supertest(app).get('/menu').set('Authorization', `Bearer ${body.result.accessToken}`)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
+        const resultReq = await supertest(app)
+          .get('/api/menu')
+          .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.length > 0).toBe(true)
       })
@@ -351,24 +359,24 @@ describe('**************** Menu ****************', () => {
     describe('if user is not logged in', () => {
       it('Try request get, should return a status code 403, forbidden', async () => {
         const menuId = 'menu1ze'
-        await supertest(app).get(`/menu/${menuId}`).expect(403)
+        await supertest(app).get(`/api/menu/${menuId}`).expect(403)
       })
     })
 
     describe('if user is already logged in by Admin', () => {
       it('Try request get but with wrong key, should return a status code 404, and data is empty', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const menuId = 'menu1ze'
         await supertest(app)
-          .get(`/menu/${menuId}`)
+          .get(`/api/menu/${menuId}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(404)
       })
 
       it('tried to prompt but with correct uuid, should return a status code 200, and data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const resultReq = await supertest(app)
-          .get(`/menu/${newMenu.uuid}`)
+          .get(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.uuid).toBe(newMenu.uuid)
@@ -376,19 +384,19 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Manager', () => {
       it('Try request get but with wrong key, should return a status code 404, and data is empty', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const menuId = 'menu1ze'
         await supertest(app)
-          .get(`/menu/${menuId}`)
+          .get(`/api/menu/${menuId}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(404)
       })
 
       it('tried to prompt but with correct uuid, should return a status code 200, and data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
 
         const resultReq = await supertest(app)
-          .get(`/menu/${newMenu.uuid}`)
+          .get(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.uuid).toBe(newMenu.uuid)
@@ -396,18 +404,18 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Machine', () => {
       it('Try request get but with wrong key, should return a status code 404, and data is empty', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         const menuId = 'menu1ze'
         await supertest(app)
-          .get(`/menu/${menuId}`)
+          .get(`/api/menu/${menuId}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(404)
       })
 
       it('tried to prompt but with correct uuid, should return a status code 200, and data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         const resultReq = await supertest(app)
-          .get(`/menu/${newMenu.uuid}`)
+          .get(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.uuid).toBe(newMenu.uuid)
@@ -415,18 +423,18 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Regular', () => {
       it('Try request get but with wrong key, should return a status code 404, and data is empty', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const menuId = 'menu1ze'
         await supertest(app)
-          .get(`/menu/${menuId}`)
+          .get(`/api/menu/${menuId}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(404)
       })
 
       it('tried to prompt but with correct uuid, should return a status code 200, and data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const resultReq = await supertest(app)
-          .get(`/menu/${newMenu.uuid}`)
+          .get(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.uuid).toBe(newMenu.uuid)
@@ -437,15 +445,15 @@ describe('**************** Menu ****************', () => {
   describe('################ Get Rating By User ################', () => {
     describe('if user is not logged in', () => {
       it('Try request get, should return a status code 403, forbidden', async () => {
-        await supertest(app).get('/menu/rate/user').expect(403)
+        await supertest(app).get('/api/menu/rate/user').expect(403)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request get, should return a status code 200, with data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const resultReq = await supertest(app)
-          .get('/menu/rate/user')
+          .get('/api/menu/rate/user')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.result.length > 0).toBe(true)
@@ -457,14 +465,14 @@ describe('**************** Menu ****************', () => {
   describe('################ Update Menu ################', () => {
     describe('if user is not logged in', () => {
       it('Try request update, should return a status code 403, forbidden', async () => {
-        await supertest(app).put(`/menu/${newMenu.uuid}`).send(updateMenuPayload).expect(403)
+        await supertest(app).put(`/api/menu/${newMenu.uuid}`).send(updateMenuPayload).expect(403)
       })
     })
     describe('if user is already logged in by Admin', () => {
       it('Try request update, should return a status code 200, by sending new menu data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const resultReq = await supertest(app)
-          .put(`/menu/${newMenu.uuid}`)
+          .put(`/api/menu/${newMenu.uuid}`)
           .send(updateMenuPayload)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(200)
@@ -474,9 +482,9 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Manager', () => {
       it('Try request update, should return a status code 200, by sending new menu data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const resultReq = await supertest(app)
-          .put(`/menu/${newMenu.uuid}`)
+          .put(`/api/menu/${newMenu.uuid}`)
           .send(updateMenuPayload)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(200)
@@ -486,9 +494,9 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Machine', () => {
       it('Try request update, should return a status code 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         await supertest(app)
-          .put(`/menu/${newMenu.uuid}`)
+          .put(`/api/menu/${newMenu.uuid}`)
           .send(updateMenuPayload)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
@@ -496,9 +504,9 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Regular', () => {
       it('Try request update, should return a status code 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         await supertest(app)
-          .put(`/menu/${newMenu.uuid}`)
+          .put(`/api/menu/${newMenu.uuid}`)
           .send(updateMenuPayload)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
@@ -506,9 +514,9 @@ describe('**************** Menu ****************', () => {
     })
 
     it('Try request update, should return a status code 404, by sending new menu data', async () => {
-      const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+      const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
       const resultReq = await supertest(app)
-        .put('/menu/wrong-uuid')
+        .put('/api/menu/wrong-uuid')
         .send(updateMenuPayload)
         .set('Authorization', `Bearer ${body.result.accessToken}`)
         .expect(404)
@@ -520,18 +528,18 @@ describe('**************** Menu ****************', () => {
   describe('################ Update Rate of Menu ################', () => {
     describe('if user is not logged in', () => {
       it('Try request post, should return a status code 403, forbidden', async () => {
-        await supertest(app).put(`/menu/rate${newMenu.uuid}`).send(updateRatePayload1).expect(403)
+        await supertest(app).put(`/api/menu/rate${newMenu.uuid}`).send(updateRatePayload1).expect(403)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request post, should return a status code 200, with sending data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const resultReq1 = await supertest(app)
-          .get('/menu/rate/user')
+          .get('/api/menu/rate/user')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         const resultReq2 = await supertest(app)
-          .put(`/menu/rate/${resultReq1.body.result[0].uuid}`)
+          .put(`/api/menu/rate/${resultReq1.body.result[0].uuid}`)
           .send(updateRatePayload1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(200)
@@ -539,9 +547,9 @@ describe('**************** Menu ****************', () => {
         expect(resultReq2.body.statusCode).toBe(200)
       })
       it('Try request post, should return a status code 404, with sending data', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const resultReq2 = await supertest(app)
-          .put('/menu/rate/wrong-uuid')
+          .put('/api/menu/rate/wrong-uuid')
           .send(updateRatePayload1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(404)
@@ -555,15 +563,15 @@ describe('**************** Menu ****************', () => {
   describe('################ Delete Menu ################', () => {
     describe('if user is not logged in', () => {
       it('Try request delete, should return a status code 403, forbidden', async () => {
-        await supertest(app).delete(`/menu/${newMenu.uuid}`).expect(403)
+        await supertest(app).delete(`/api/menu/${newMenu.uuid}`).expect(403)
       })
     })
 
     describe('if user is already logged in by Admin', () => {
       it('Try request delete, should return a status code 200, param uuid', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const resultReq = await supertest(app)
-          .delete(`/menu/${newMenu.uuid}`)
+          .delete(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.statusCode).toBe(200)
@@ -571,9 +579,9 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Manager', () => {
       it('Try request delete, should return a status code 200, param uuid', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const resultReq = await supertest(app)
-          .delete(`/menu/${newMenu2.uuid}`)
+          .delete(`/api/menu/${newMenu2.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.statusCode).toBe(200)
         expect(resultReq.body.statusCode).toBe(200)
@@ -581,27 +589,27 @@ describe('**************** Menu ****************', () => {
     })
     describe('if user is already logged in by Machine', () => {
       it('Try request delete, should return a status code 403, param uuid', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         await supertest(app)
-          .delete(`/menu/${newMenu.uuid}`)
+          .delete(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
       })
     })
     describe('if user is already logged in by Regular', () => {
       it('Try request delete, should return a status code 403, param uuid', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         await supertest(app)
-          .delete(`/menu/${newMenu.uuid}`)
+          .delete(`/api/menu/${newMenu.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
       })
     })
 
     it('Try request delete, should return a status code 404, param uuid', async () => {
-      const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+      const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
       const resultReq = await supertest(app)
-        .delete('/menu/wrong-uuid')
+        .delete('/api/menu/wrong-uuid')
         .set('Authorization', `Bearer ${body.result.accessToken}`)
       expect(resultReq.statusCode).toBe(404)
       expect(resultReq.body.statusCode).toBe(404)

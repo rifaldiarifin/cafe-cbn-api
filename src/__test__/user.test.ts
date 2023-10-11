@@ -118,15 +118,15 @@ describe('**************** User ****************', () => {
   describe('################ Create User ################', () => {
     describe('if user is not logged in as Admin', () => {
       it('Try request post, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).post('/user').send(regular).expect(403)
+        await supertest(app).post('/api/user').send(regular).expect(403)
       })
     })
     describe('if user is already logged in as Admin', () => {
       it('Try request post, should return a statusCode 201, Created', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .post('/user')
+          .post('/api/user')
           .send(regular)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('Created')
@@ -140,14 +140,16 @@ describe('**************** User ****************', () => {
   describe('################ Get All User ################', () => {
     describe('if user is not logged in as Admin', () => {
       it('Try request post, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).get('/user').expect(403)
+        await supertest(app).get('/api/user').expect(403)
       })
     })
     describe('if user is already logged in as Admin', () => {
       it('Try request post, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
-        const resultReq = await supertest(app).get('/user').set('Authorization', `Bearer ${body.result.accessToken}`)
+        const resultReq = await supertest(app)
+          .get('/api/user')
+          .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
         expect(resultReq.body.result.length > 0).toBe(true)
@@ -159,15 +161,15 @@ describe('**************** User ****************', () => {
   describe('################ Get User By ID ################', () => {
     describe('if user is not logged in as Admin', () => {
       it('Try request post, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).get(`/user/${admin.uuid}`).expect(403)
+        await supertest(app).get(`/api/user/${admin.uuid}`).expect(403)
       })
     })
     describe('if user is already logged in as Admin', () => {
       it('Try request post, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .get(`/user/${admin.uuid}`)
+          .get(`/api/user/${admin.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -176,10 +178,10 @@ describe('**************** User ****************', () => {
       })
 
       it('Try request post, should return a statusCode 404, Data not found', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .get('/user/wrong-uuid')
+          .get('/api/user/wrong-uuid')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe(false)
         expect(resultReq.body.statusCode).toBe(404)
@@ -193,15 +195,15 @@ describe('**************** User ****************', () => {
   describe('################ Update User By ID ################', () => {
     describe('if user is not logged in as Admin', () => {
       it('Try request put, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).put(`/user/${manager.uuid}`).send(updateUserManager)
+        await supertest(app).put(`/api/user/${manager.uuid}`).send(updateUserManager)
       })
     })
     describe('if user is already logged in as Admin', () => {
       it('Try request put, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .put(`/user/${manager.uuid}`)
+          .put(`/api/user/${manager.uuid}`)
           .send(updateUserManager)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
@@ -210,10 +212,10 @@ describe('**************** User ****************', () => {
       })
 
       it('Try request put, should return a statusCode 404, with wrong params', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .put('/user/wrong-uuid')
+          .put('/api/user/wrong-uuid')
           .send(updateUserManager)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe(false)
@@ -227,15 +229,15 @@ describe('**************** User ****************', () => {
   describe('################ Delete User By ID ################', () => {
     describe('if user is not logged in as Admin', () => {
       it('Try request delete, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).delete(`/user/${manager.uuid}`).expect(403)
+        await supertest(app).delete(`/api/user/${manager.uuid}`).expect(403)
       })
     })
     describe('if user is already logged in as Admin', () => {
       it('Try request delete, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .delete(`/user/${manager.uuid}`)
+          .delete(`/api/user/${manager.uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -243,10 +245,10 @@ describe('**************** User ****************', () => {
       })
 
       it('Try request delete, should return a statusCode 404, with wrong params', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
 
         const resultReq = await supertest(app)
-          .delete('/user/wrong-uuid')
+          .delete('/api/user/wrong-uuid')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe(false)
         expect(resultReq.body.statusCode).toBe(404)

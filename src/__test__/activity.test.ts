@@ -110,15 +110,15 @@ describe('**************** Activity ****************', () => {
   describe('################ Create Activity ################', () => {
     describe('if user not logged in', () => {
       it('Try request post, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).post('/activity').send(activityPayload1).expect(403)
+        await supertest(app).post('/api/activity').send(activityPayload1).expect(403)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request post, should return a statusCode 201, Created', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const requestReq = await supertest(app)
-          .post('/activity')
+          .post('/api/activity')
           .send(activityPayload1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(requestReq.body.statusCode).toBe(201)
@@ -132,15 +132,15 @@ describe('**************** Activity ****************', () => {
   describe('################ Get Activity ################', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).get('/activity').expect(403)
+        await supertest(app).get('/api/activity').expect(403)
       })
     })
 
     describe('if user is already logged in as admin', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const resultReq = await supertest(app)
-          .get('/activity')
+          .get('/api/activity')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -152,15 +152,15 @@ describe('**************** Activity ****************', () => {
   describe('################ Get My Activity ################', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).get('/activity/me').expect(403)
+        await supertest(app).get('/api/activity/me').expect(403)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const resultReq = await supertest(app)
-          .get('/activity/me')
+          .get('/api/activity/me')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -173,16 +173,16 @@ describe('**************** Activity ****************', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
         const result: any = await findActivityFromDB()
-        await supertest(app).get(`/activity/${result[0].uuid}`).expect(403)
+        await supertest(app).get(`/api/activity/${result[0].uuid}`).expect(403)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userRegular)
+        const { body } = await supertest(app).post('/api/auth/login').send(userRegular)
         const result: any = await findActivityFromDB()
         const resultReq = await supertest(app)
-          .get(`/activity/${result[0].uuid}`)
+          .get(`/api/activity/${result[0].uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -196,16 +196,16 @@ describe('**************** Activity ****************', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
         const result: any = await findActivityFromDB()
-        await supertest(app).delete(`/activity/${result[0].uuid}`).expect(403)
+        await supertest(app).delete(`/api/activity/${result[0].uuid}`).expect(403)
       })
     })
 
     describe('if user is already logged in as admin', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { body } = await supertest(app).post('/api/auth/login').send(userAdmin)
         const result: any = await findActivityFromDB()
         const resultReq = await supertest(app)
-          .delete(`/activity/${result[0].uuid}`)
+          .delete(`/api/activity/${result[0].uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)

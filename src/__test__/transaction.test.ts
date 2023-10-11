@@ -48,7 +48,6 @@ const {
   createPayloadUserRegular,
   userManager,
   userKitchen,
-  userCashier,
   userMachine
 } = {
   // User
@@ -120,10 +119,6 @@ const {
   userKitchen: {
     username: 'kitchen123',
     password: 'kitchen123'
-  },
-  userCashier: {
-    username: 'cashier123',
-    password: 'cashier123'
   },
   userMachine: {
     username: 'machine123',
@@ -219,15 +214,15 @@ describe('**************** Transaction ****************', () => {
   describe('################ Create Transaction ################', () => {
     describe('if user not logged in', () => {
       it('Try request post, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).post('/transaction').send(transaction1)
+        await supertest(app).post('/api/transaction').send(transaction1)
       })
     })
 
     describe('if user is already logged in as Machine', () => {
       it('Try request post, should return a statusCode 201, Created', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         const resultReq = await supertest(app)
-          .post('/transaction')
+          .post('/api/transaction')
           .send(transaction1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('Created')
@@ -237,9 +232,9 @@ describe('**************** Transaction ****************', () => {
     })
     describe('if user is already logged in as Admin or Manager', () => {
       it('Try request post, should return a statusCode 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         await supertest(app)
-          .post('/transaction')
+          .post('/api/transaction')
           .send(transaction1)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
@@ -251,14 +246,14 @@ describe('**************** Transaction ****************', () => {
   describe('################ Get Transaction ################', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).get('/transaction').expect(403)
+        await supertest(app).get('/api/transaction').expect(403)
       })
     })
     describe('if user is already logged in as Admin or Manager', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const resultReq = await supertest(app)
-          .get('/transaction')
+          .get('/api/transaction')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -268,8 +263,11 @@ describe('**************** Transaction ****************', () => {
     })
     describe('if user is already logged in as Regular or Machine', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
-        await supertest(app).get('/transaction').set('Authorization', `Bearer ${body.result.accessToken}`).expect(403)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
+        await supertest(app)
+          .get('/api/transaction')
+          .set('Authorization', `Bearer ${body.result.accessToken}`)
+          .expect(403)
       })
     })
   })
@@ -278,16 +276,16 @@ describe('**************** Transaction ****************', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
         const result: any = await findTransaction()
-        await supertest(app).get(`/transaction/${result[0].uuid}`)
+        await supertest(app).get(`/api/transaction/${result[0].uuid}`)
       })
     })
 
     describe('if user is already logged in', () => {
       it('Try request get, should return a statusCode 200, OK with correct params', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const result: any = await findTransaction()
         const resultReq = await supertest(app)
-          .get(`/transaction/${result[0].uuid}`)
+          .get(`/api/transaction/${result[0].uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -295,9 +293,9 @@ describe('**************** Transaction ****************', () => {
         expect(resultReq.body.result.uuid).toBe(result[0].uuid)
       })
       it('Try request get, should return a statusCode 404, data not found with wrong params', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const resultReq = await supertest(app)
-          .get('/transaction/wrong-uuid')
+          .get('/api/transaction/wrong-uuid')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe(false)
         expect(resultReq.body.statusCode).toBe(404)
@@ -309,15 +307,15 @@ describe('**************** Transaction ****************', () => {
   describe('################ Get My Transaction ################', () => {
     describe('if user not logged in', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
-        await supertest(app).get('/transaction/me').expect(403)
+        await supertest(app).get('/api/transaction/me').expect(403)
       })
     })
 
     describe('if user is already logged in as Machine', () => {
       it('Try request get, should return a statusCode 200, OK', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userMachine)
+        const { body } = await supertest(app).post('/api/auth/login').send(userMachine)
         const resultReq = await supertest(app)
-          .get('/transaction/me')
+          .get('/api/transaction/me')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -328,9 +326,9 @@ describe('**************** Transaction ****************', () => {
 
     describe('if user is already logged in as Admin or Manager', () => {
       it('Try request get, should return a statusCode 403, forbidden', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         await supertest(app)
-          .get('/transaction/me')
+          .get('/api/transaction/me')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
           .expect(403)
       })
@@ -342,31 +340,17 @@ describe('**************** Transaction ****************', () => {
     describe('if user not logged in', () => {
       it('Try request put, should return a statusCode 403, forbidden', async () => {
         const result: any = await findTransaction()
-        await supertest(app).put(`/transaction/${result[0].uuid}`).send({ orderStatus: 'Done' })
-      })
-    })
-
-    describe('if user is already logged in as cashier', () => {
-      it('Try request put, should return a statusCode 200, OK with sending orderStatus Prepare', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userCashier)
-        const result: any = await findTransaction()
-        const resultReq = await supertest(app)
-          .put(`/transaction/${result[0].uuid}`)
-          .send({ orderStatus: 'Prepare' })
-          .set('Authorization', `Bearer ${body.result.accessToken}`)
-        expect(resultReq.body.status).toBe('OK')
-        expect(resultReq.body.statusCode).toBe(200)
-        expect(resultReq.statusCode).toBe(200)
+        await supertest(app).put(`/api/transaction/${result[0].uuid}`).send({ orderStatus: 'complete' })
       })
     })
 
     describe('if user is already logged in as kitchen', () => {
-      it('Try request put, should return a statusCode 200, OK with sending orderStatus Done', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userKitchen)
+      it('Try request put, should return a statusCode 200, OK with sending orderStatus complete', async () => {
+        const { body } = await supertest(app).post('/api/auth/login').send(userKitchen)
         const result: any = await findTransaction()
         const resultReq = await supertest(app)
-          .put(`/transaction/${result[0].uuid}`)
-          .send({ orderStatus: 'Done' })
+          .put(`/api/transaction/${result[0].uuid}`)
+          .send({ orderStatus: 'complete' })
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -380,15 +364,15 @@ describe('**************** Transaction ****************', () => {
     describe('if user not logged in', () => {
       it('Try request delete, should return a statusCode 403, forbidden', async () => {
         const result: any = await findTransaction()
-        await supertest(app).delete(`/transaction/${result[0].uuid}`).expect(403)
+        await supertest(app).delete(`/api/transaction/${result[0].uuid}`).expect(403)
       })
     })
     describe('if user is already logged in as Manager', () => {
       it('Try request delete, should return a statusCode 200, OK with correct params', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const result: any = await findTransaction()
         const resultReq = await supertest(app)
-          .delete(`/transaction/${result[0].uuid}`)
+          .delete(`/api/transaction/${result[0].uuid}`)
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe('OK')
         expect(resultReq.body.statusCode).toBe(200)
@@ -397,9 +381,9 @@ describe('**************** Transaction ****************', () => {
     })
     describe('if user is already logged in as Manager', () => {
       it('Try request delete, should return a statusCode 404, with wrong params', async () => {
-        const { body } = await supertest(app).post('/auth/login').send(userManager)
+        const { body } = await supertest(app).post('/api/auth/login').send(userManager)
         const resultReq = await supertest(app)
-          .delete('/transaction/wrong-uuid')
+          .delete('/api/transaction/wrong-uuid')
           .set('Authorization', `Bearer ${body.result.accessToken}`)
         expect(resultReq.body.status).toBe(false)
         expect(resultReq.body.statusCode).toBe(404)
