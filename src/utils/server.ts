@@ -20,6 +20,7 @@ const createServer = () => {
     cors({
       origin: [
         'http://localhost:3000',
+        'http://localhost:4173',
         'https://cafecbn.netlify.app',
         'http://192.168.43.102:3000',
         'http://223.255.227.12:3000'
