@@ -101,7 +101,6 @@ export const addUser = async (req: Request, res: Response) => {
       logger.error(`ERROR: Users - Create = ${error.message}`)
       return responseHandler([false, 409, `${getConflict(error.keyValue)}, is already in use`, []], res)
     }
-    // console.log({...error})
     logger.error(`ERROR: Users - Create = ${error.message}`)
     return responseHandler([false, 422, error.message, []], res)
   }
@@ -172,6 +171,10 @@ export const updateUser = async (req: Request, res: Response) => {
   if (contactValidate.error) {
     logger.error(`ERROR: Users - Update = ${contactValidate.error.details[0].message}`)
     return responseHandler([false, 422, contactValidate.error.details[0].message, []], res)
+  }
+
+  if (userValidate.value?.password) {
+    userValidate.value.password = `${hashing(userValidate.value.password)}`
   }
 
   // Success validate

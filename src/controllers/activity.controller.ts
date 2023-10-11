@@ -20,10 +20,7 @@ export const createActivity = async (req: Request, res: Response) => {
   req.body.uuid = uuidv4()
   req.body.user = {
     data: _id,
-    fullname:
-      res.locals.user.lastname.length > 0
-        ? `${res.locals.user.firstname} ${res.locals.user.lastname}`
-        : `${res.locals.user.firstname}`
+    fullname: res.locals.user.username
   }
   req.body.createdAt = timestamps()
   req.body.updatedAt = timestamps()
