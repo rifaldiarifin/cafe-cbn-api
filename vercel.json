@@ -5,10 +5,11 @@
             "use": "@vercel/node"
         }
     ],
-    "rewrites": [
+    "routes": [
         {
             "source": "/(.*)",
             "destination": "src.index.ts"
         }
-    ]
+    ],
+    "public": false
 }
